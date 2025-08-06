@@ -1,0 +1,245 @@
+package views
+
+import (
+"gl/models"
+"strconv"
+)
+
+templ JournalEntryForm(header, msg string, journal models.Journal, accounts []models.Account) {
+<div class="container">
+  <h1 class="mb-4">{ header }</h1>
+  <form action="/journal/save" method="post">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <label for="entry-date" class="form-label">Date</label>
+        <input type="date" id="journal-date" name="journal-date" class="form-control" required value={
+          journal.JournalDate.Format("2006-01-02") } />
+      </div>
+      <div class="col-md-4">
+        <label for="journal-number" class="form-label">Reference</label>
+        if journal.JournalNumber != nil {
+        <input type="text" id="journal-number" name="journal-number" class="form-control" value={*journal.JournalNumber
+          } />
+        }else{
+        <input type="text" id="journal-number" name="journal-number" class="form-control" />
+        }
+      </div>
+
+
+    </div>
+    <div class="row mb-3 align-items-center">
+      <div class="col-md-2">
+        <label for="description" class="col-form-label">Summary Description</label>
+      </div>
+      <div class="col-md-10">
+        <input type="text" name="description" id="description" class="form-control" required value="" />
+      </div>
+    </div>
+    <table class="table table-bordered" id="journal-lines">
+      <thead class="table-light">
+        <tr>
+          <th style="width: 25%;">Account</th>
+          <th style="width: 35%;">Description</th>
+          <th style="width: 20%;">Debit</th>
+          <th style="width: 20%;">Credit</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        if len(journal.Lines) == 0 {
+        <tr>
+          <td>
+            <select name="accounts_id[]" class="form-select account" aria-label="Default select example"
+              onblur="validateDebitCredit()">
+              <option value="">Select Account</option>
+              for _, account := range accounts {
+              <option value={ strconv.FormatInt(account.Id, 10) }>{ account.AccountCode } - { account.AccountName }
+              </option>
+              }
+            </select>
+          </td>
+          <td><input type="text" name="line_description[]" class="form-control description" required
+              onblur="validateDebitCredit()" /></td>
+          <td><input type="number" name="debit[]" class="form-control debit" onblur="validateDebitCredit()" /></td>
+          <td><input type="number" name="credit[]" class="form-control credit" onblur="validateDebitCredit()" /></td>
+        </tr>
+
+        } else {
+        for _, item := range journal.Lines {
+        <tr>
+          <td><input type="text" name="account_id[]" class="form-control" required value={ item.AccountID } /></td>
+          <td><input type="text" name="line_description[]" class="form-control" required value={ item.Description } />
+          </td>
+          <td><input type="number" step="0.00" name="debit[]" class="form-control" value={ item.Debit.String() } /></td>
+          <td>
+            <input type="number" name="credit[]" class="form-control" value={ item.Credit.String() } />
+          </td>
+
+        </tr>
+        }
+
+        }
+        <tr id="balance-row">
+          <td></td>
+          <td class="text-primary" style="padding: 17px;"><strong>Balance</strong></td>
+          <td><input type="number" name="debit-bal" class="form-control" readonly value="0.00" tabindex="-1" /></td>
+          <td><input type="number" name="credit-bal" class="form-control" readonly value="0.00" tabindex="-1" /></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mb-3">
+      <button type="button" id="add-line" class="btn btn-secondary">Add Line</button>
+      <span class="text-danger">{ msg }</span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Journal Entrys</button>
+  </form>
+</div>
+<script>
+  document.getElementById('add-line').addEventListener('click', () => {
+
+    const table = document.querySelector("#journal-lines");
+    const tbody = table.querySelector("tbody");
+    const rows = tbody.rows; // Exclude the last row (balance row)
+    const warningRows = document.querySelectorAll(".table-warning");
+    if (warningRows.length > 0) {
+
+      return; // Prevent adding a new line if there are warning rows
+    }
+    const firstRow = rows[0]; // first data row
+    const clonedRow = firstRow.cloneNode(true);
+
+
+    // Clear input values in the clone
+    const inputs = clonedRow.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => input.value = "0.00");
+    const textInputs = clonedRow.querySelectorAll('input[type="text"], input[type="select"]');
+    textInputs.forEach(input => input.value = "");
+
+    // Insert before last row
+    const lastRow = rows[rows.length - 1];
+    tbody.insertBefore(clonedRow, lastRow);
+
+    attachBlurValidation(clonedRow);
+
+  });
+
+  function attachBlurValidation(row) {
+    inputs = row.querySelectorAll('input');
+    inputs.forEach(input => {
+      //if (input.classList.contains('debit') || input.classList.contains('credit')) {
+      input.addEventListener('blur', validateDebitCredit);
+      //}
+    });
+    //const debitInput = row.querySelector('.debit');
+    //const creditInput = row.querySelector('.credit');
+
+    /* if (debitInput) {
+      debitInput.addEventListener('blur', validateDebitCredit);
+    }
+    if (creditInput) {
+      creditInput.addEventListener('blur', validateDebitCredit);
+    } */
+  }
+
+  function validateDebitCredit() {
+    let debitTotal = 0;
+    let creditTotal = 0;
+
+    document.querySelectorAll("tbody tr:not(:last-child)").forEach((row) => {
+      const debitInput = row.querySelector(".debit");
+      const creditInput = row.querySelector(".credit");
+      const accountInput = row.querySelector(".account");
+      const descriptionInput = row.querySelector(".description");
+
+      //override row.querySelector(".debit") to decimel place
+
+
+      //if (!checkEmptyInputs(row)) { return }
+      const debit = parseFloat(debitInput?.value) || 0;
+      const credit = parseFloat(creditInput?.value) || 0;
+
+      if (isNaN(debit) || debit == 0 || debit == "") {
+        debitInput.value = "0.00";
+      } else {
+        debitInput.value = debit.toFixed(2); // Ensure two decimal places
+      }
+      if (isNaN(credit) || credit == 0 || credit == "") {
+        creditInput.value = "0.00";
+      } else {
+
+        creditInput.value = credit.toFixed(2); // Ensure two decimal places if not error converted
+      }
+
+      //checkEmptyInputs()
+      // Sum totals
+      debitTotal += debit;
+      creditTotal += credit;
+
+      // Validation: either debit or credit must be filled (not both or neither)
+      if ((debit > 0 && credit > 0) || (debit === 0 && credit === 0)) {
+        row.classList.add("table-warning");
+      } else {
+        row.classList.remove("table-warning");
+      }
+
+      row = document.querySelector("#balance-row");
+      if (debitTotal != creditTotal) {
+        row.classList.add("invalid-row");
+      } else {
+        row.classList.remove("invalid-row");
+        debitInput.setCustomValidity("");
+        creditInput.setCustomValidity("");
+      }
+    });
+
+    document.querySelector("input[name='debit-bal']").value = debitTotal.toFixed(2);
+    document.querySelector("input[name='credit-bal']").value = creditTotal.toFixed(2);
+  }
+
+  document.querySelector('button[type="submit"]').addEventListener('click', (event) => {
+    const debitTotal = document.querySelector("input[name='debit-bal']")
+    const creditTotal = document.querySelector("input[name='credit-bal']")
+    const balacneRow = document.querySelector("#balance-row");
+
+    document.querySelectorAll("tbody tr:not(:last-child)").forEach((row) => {
+      const debitInput = row.querySelector(".debit");
+      const creditInput = row.querySelector(".credit");
+
+      // Check if either debit or credit is filled
+      if ((parseFloat(debitInput.value) || 0) > 0 || (parseFloat(creditInput.value) || 0) > 0) {
+        row.classList.remove("invalid-row");
+      } else {
+        row.classList.add("invalid-row");
+        event.preventDefault(); // Prevent form submission if no debit or credit is filled
+        return; // Exit the loop early
+      }
+
+      // Check for empty inputs
+    })
+    if (debitTotal.value != creditTotal.value || debitTotal.value == "" || creditTotal.value == "" || parseFloat(debitTotal.value) == 0 || parseFloat(creditTotal.value) == 0) {
+      balacneRow.classList.add("invalid-row");
+      event.preventDefault(); // Prevent form submission if totals do not match
+    } else {
+      balacneRow.classList.remove("invalid-row");
+    }
+  })
+
+  function checkEmptyInputs(row) {
+    if (row.querySelector(".account").value == "" || row.querySelector(".description").value == "") {
+      row.classList.add("table-warning");
+      return false; // Empty inputs found
+    } else {
+      row.classList.remove("table-warning");
+      return true; // No empty inputs
+    }
+  }
+
+  function checkWarningRows() {
+    const warningRows = document.querySelectorAll(".table-warning");
+    if (warningRows.length > 0) {
+      return false; // There are warning rows
+    }
+    return true; // No warning rows
+  }
+
+</script>
+}

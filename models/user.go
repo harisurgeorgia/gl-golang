@@ -1,0 +1,8 @@
+package models
+
+type User struct {
+	Id       string `db:"id" form:"id"`
+	Email    string `db:"email" form:"email" binding:"required,email"`
+	Fullname string `db:"fullname" form:"fullname" binding:"required"`
+	Password string `db:"password" form:"password" binding:"required,min=6"`
+}

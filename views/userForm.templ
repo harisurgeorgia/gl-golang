@@ -1,0 +1,40 @@
+package views
+import (
+"gl/models"
+)
+
+templ UserForm(header string, errorMsg string, user models.User) {
+    <div class="d-flex vh-100 justify-content-center align-items-center">
+        <div class="card shadow p-4" style="min-width: 350px; max-width: 400px; width: 100%;">
+            <h1 class="text-center mb-4">{header}</h1>
+            if errorMsg != "" {
+                <div class="alert alert-danger" role="alert">
+                    {errorMsg}
+                </div>
+            }
+            <form method="post" action="/user">
+                <input type="hidden" name="id" value={user.Id} />
+                <div class="mb-3">
+                    <label for="username" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="fullname" name="fullname" value={user.Fullname} />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email" value={user.Email} />
+                </div>
+                if user.Id  == "" {
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password" />
+                </div>
+                <div class="mb-3">
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
+                </div>
+                }
+
+                <button type="submit" class="btn btn-primary w-100">Submit</button>
+            </form>
+        </div>
+    </div>
+}

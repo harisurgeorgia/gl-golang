@@ -1,0 +1,35 @@
+package views
+
+templ Layout(data PageData, content templ.Component) {
+	<html>
+		<head>
+			<title>{ data.Title }</title>
+			<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+			<style>
+                input[type=number]::-webkit-inner-spin-button, 
+                input[type=number]::-webkit-outer-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                    text-align: right;
+                }
+
+                input[type=number] {
+                    -moz-appearance: textfield; /* Firefox */
+                    text-align: right;
+                }
+
+                .invalid-row {
+                    background-color: #ffdddd;
+            }
+</style>
+		</head>
+		<body>
+			@Header()
+			<main>
+				@content
+			</main>
+			@Footer()
+			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+		</body>
+	</html>
+}

@@ -1,0 +1,27 @@
+package views
+
+templ LoginForm(header string,  errorMsg string)  {
+    <div class="d-flex vh-100 justify-content-center align-items-center">
+        <div class="card shadow p-4" style="min-width: 350px; max-width: 400px; width: 100%;">
+            <h1 class="text-center mb-4">{header}</h1>
+            if errorMsg != "" {
+                <div class="alert alert-danger" role="alert">
+                    {errorMsg}
+                </div>
+            }
+            <form method="post" action="/login">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" name="email"  />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="password"  />
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Login</button>
+            </form>
+        </div>
+    </div>
+}
+
+
