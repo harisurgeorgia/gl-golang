@@ -23,4 +23,5 @@ func RegisterRoutes(r *gin.Engine) {
 	r.GET("/journal", controllers.JournalEntry)
 	r.POST("/journal/save", controllers.JournalSave)
 	r.GET("/close-period", controllers.ClosePeriod)
+	r.GET("/dashboard", controllers.Dashboard)
 }

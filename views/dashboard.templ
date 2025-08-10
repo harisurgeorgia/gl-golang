@@ -1,0 +1,28 @@
+package views
+
+
+
+
+templ DashboardPage(pageData PageData) {
+
+
+<div class="container">
+    <h1 class="mb-4">{ pageData.Header }</h1>
+    <h2 class="mb-4">{ pageData.User.Fullname }</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Welcome to the General Ledger Dashboard</h5>
+            <p class="card-text">Role: { pageData.User.Role }</p>
+            <a href="/journal" class="btn btn-primary">Create New Journal</a>
+            <a href="/journal/list" class="btn btn-secondary">View Journals Pending Posting Entries</a>
+            if pageData.User.Role == "admin" {
+            <a href="/journal/approve" class="btn btn-secondary">Approve Journals</a>
+            }
+            <a href="/journal/posted" class="btn btn-secondary">View Posted Journals by date range</a>
+            <a href="/ladger" class="btn btn-secondary">View Account Ledger</a>
+
+        </div>
+    </div>
+</div>
+}

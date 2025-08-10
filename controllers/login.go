@@ -29,11 +29,11 @@ func LoginSubmit(c *gin.Context) {
 	email := utils.NormalizeEmail(c.PostForm("email"))
 	password := strings.TrimSpace(c.PostForm("password"))
 
-	query := `SELECT id, password FROM general_ledger.users WHERE email = $1`
+	query := `SELECT id, password,  COALESCE(roles, '') AS role, fullname FROM general_ledger.users WHERE email = $1 and is_active = true`
 	row := db.Conn.QueryRow(query, email)
-	var id, hash string
+	var id, hash, role, fullname string
 
-	err := row.Scan(&id, &hash)
+	err := row.Scan(&id, &hash, &role, &fullname)
 	if err != nil {
 		log.Println("Error querying user:", err)
 		utils.Render(c, http.StatusUnauthorized, views.Layout(
@@ -53,8 +53,11 @@ func LoginSubmit(c *gin.Context) {
 	}
 
 	session.SetSession(c, "user_id", id)
+	session.SetSession(c, "user_email", email)
+	session.SetSession(c, "user_name", fullname)
+	session.SetSession(c, "user_role", role) // Assuming role is admin for simplicity
 
-	c.Redirect(http.StatusFound, "/user")
+	c.Redirect(http.StatusFound, "/dashboard/?id="+id)
 }
 
 func getLoginPageData() views.PageData {

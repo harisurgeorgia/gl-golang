@@ -62,3 +62,15 @@ func LogoutHandler(c *gin.Context) {
 	// 4) Redirect or render a logout confirmation
 	c.Redirect(http.StatusSeeOther, "/login")
 }
+
+func GetSession(c *gin.Context, key string) string {
+	sess := sessions.Default(c)
+	value := sess.Get(key)
+
+	value, ok := value.(string)
+	if !ok {
+		log.Printf("Session value for key '%s' is not a string: %v", key, value)
+		c.Redirect(http.StatusBadRequest, "/unexpected-error")
+	}
+	return value.(string)
+}
