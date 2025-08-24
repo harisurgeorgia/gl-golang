@@ -16,9 +16,17 @@ templ JournalList(journals []models.Journal) {
             <h6 class="card-subtitle mb-2 text-muted">Reference: N/A</h6>
             }
             <p class="card-text">Status: { journal.Posted }</p>
-            <a href={ "/journal/edit/" + strconv.FormatInt(*journal.ID, 10) } class="btn btn-primary">Edit</a>
-            if journal.Posted == true {
-            <a href={ "/journal/post/" + strconv.FormatInt(*journal.ID, 10) } class="btn btn-success ms-2">Post</a>
+            if journal.Verified == false {
+            <a href={ "/journal/edit/" + strconv.FormatInt(*journal.ID, 10) } class="btn btn-primary">Edit Journal</a>
+            }
+
+            if journal.Posted == false && journal.Verified == false {
+            <a href={ "/journal/verify/" + strconv.FormatInt(*journal.ID, 10) } class="btn btn-success ms-2">Verify
+                Journal</a>
+            }
+            if journal.Posted == false && journal.Verified == true {
+            <a href={ "/journal/post/" + strconv.FormatInt(*journal.ID, 10) } class="btn btn-warning ms-2">Post
+                Journal</a>
             }
         </div>
     </div>
