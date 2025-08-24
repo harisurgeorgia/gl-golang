@@ -92,7 +92,7 @@ func UserSave(c *gin.Context) {
 	}
 	log.Println("User created with ID:", user.Id)
 
-	c.Redirect(http.StatusFound, fmt.Sprintf("/user/%s", user.Id))
+	c.Redirect(http.StatusFound, fmt.Sprintf("/user/%d", user.Id))
 
 }
 func GetUser(c *gin.Context) {
