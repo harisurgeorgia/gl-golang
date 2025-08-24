@@ -5,19 +5,22 @@ import (
 	"fmt"
 	"gl/db"
 	"gl/mail"
+	"gl/models"
 	"gl/session"
 	"gl/utils"
 	"gl/validation"
 	"gl/views"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
-func LoginPage(c *gin.Context) {
+func Login(c *gin.Context) {
+
 	var data = getLoginPageData()
 	utils.Render(c, 200, views.Layout(data, views.LoginForm(data.Header, "")))
 }
@@ -29,11 +32,13 @@ func LoginSubmit(c *gin.Context) {
 	email := utils.NormalizeEmail(c.PostForm("email"))
 	password := strings.TrimSpace(c.PostForm("password"))
 
-	query := `SELECT id, password,  COALESCE(roles, '') AS role, fullname FROM general_ledger.users WHERE email = $1 and is_active = true`
+	query := `SELECT id, password,  COALESCE(role, '') AS role, fullname FROM general_ledger.users WHERE email = $1 and is_active = true`
 	row := db.Conn.QueryRow(query, email)
-	var id, hash, role, fullname string
 
-	err := row.Scan(&id, &hash, &role, &fullname)
+	//var id, hash, role, fullname string
+	var user models.User
+
+	err := row.Scan(&user.Id, &user.Password, &user.Role, &user.Fullname)
 	if err != nil {
 		log.Println("Error querying user:", err)
 		utils.Render(c, http.StatusUnauthorized, views.Layout(
@@ -42,7 +47,7 @@ func LoginSubmit(c *gin.Context) {
 		))
 		return
 	}
-	if !utils.CheckPasswordHash(password, hash) {
+	if !utils.CheckPasswordHash(password, user.Password) {
 
 		log.Println("Invalid password for user:", email)
 		utils.Render(c, http.StatusUnauthorized, views.Layout(
@@ -51,13 +56,13 @@ func LoginSubmit(c *gin.Context) {
 		))
 		return
 	}
+	idStr := strconv.FormatInt(*user.Id, 10)
+	session.SetSession(c, "user_id", idStr)
+	session.SetSession(c, "user_email", user.Email)
+	session.SetSession(c, "user_name", user.Fullname)
+	session.SetSession(c, "user_role", *user.Role) // Assuming role is admin for simplicity
 
-	session.SetSession(c, "user_id", id)
-	session.SetSession(c, "user_email", email)
-	session.SetSession(c, "user_name", fullname)
-	session.SetSession(c, "user_role", role) // Assuming role is admin for simplicity
-
-	c.Redirect(http.StatusFound, "/dashboard/?id="+id)
+	c.Redirect(http.StatusFound, "/dashboard")
 }
 
 func getLoginPageData() views.PageData {
@@ -146,7 +151,7 @@ func ChangePassword(c *gin.Context) {
 	if rows == 0 {
 		utils.Render(c, http.StatusSeeOther, views.Layout(data, views.ChangePasswordForm(data.Header, "unknown token or email", email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
 	}
-	c.Redirect(http.StatusOK, "/login")
+	c.Redirect(http.StatusOK, "/")
 
 }
 
@@ -166,6 +171,11 @@ func saveResetToken(email, token string) error {
 		return fmt.Errorf("no user found with email %q", email)
 	}
 	return nil
+}
+
+func Logout(c *gin.Context) {
+	session.LogoutHandler(c)
+	c.Redirect(http.StatusSeeOther, "/")
 }
 
 // utils.Render is a utility function to render templates

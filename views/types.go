@@ -6,6 +6,7 @@ type PageData struct {
 	Header string
 	Role   string
 	User   UserData
+	Menus  []UserMenu
 }
 type UserData struct {
 	Id       int64

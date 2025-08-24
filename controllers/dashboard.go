@@ -13,7 +13,7 @@ import (
 
 func Dashboard(c *gin.Context) {
 
-	idStr := session.GetSession(c, "id")
+	idStr := session.GetSession(c, "user_id")
 	idInt64, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		log.Printf("Invalid session id: %v", idStr)
@@ -29,10 +29,18 @@ func Dashboard(c *gin.Context) {
 		Password: "", // probably don't store password in struct from session
 	}
 
+	menus := []views.UserMenu{
+		{MenuDescription: "Dashboard", Icon: "fa fa-home", Url: "/dashboard"},
+		{MenuDescription: "Users", Icon: "fa fa-users", Url: "/user"},
+		{MenuDescription: "Journal", Icon: "fa fa-book", Url: "/journal"},
+		{MenuDescription: "Close Period", Icon: "fa fa-calendar", Url: "/close-period"},
+	}
+
 	data := views.PageData{
 		Title:  "Dashboard",
 		Header: "Dashboard",
 		User:   user,
+		Menus:  menus,
 	}
 
 	utils.Render(c, 200, views.Layout(data, views.DashboardPage(data))) // Assuming msg is a string variable with a welcome message

@@ -26,20 +26,6 @@ func SessionInit(router *gin.Engine) {
 	router.Use(sessions.Sessions("mysession", store))
 }
 
-// AuthRequired ensures “user_id” exists in the session
-func AuthRequired() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		sess := sessions.Default(c)
-		if sess.Get("user_id") == nil {
-			// not logged in → redirect or abort
-			c.Redirect(http.StatusSeeOther, "/login")
-			c.Abort()
-			return
-		}
-		c.Next()
-	}
-}
-
 func LogoutHandler(c *gin.Context) {
 	sess := sessions.Default(c)
 

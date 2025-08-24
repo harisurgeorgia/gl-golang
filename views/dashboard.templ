@@ -1,28 +1,47 @@
 package views
 
-
-
-
 templ DashboardPage(pageData PageData) {
 
-
-<div class="container">
-    <h1 class="mb-4">{ pageData.Header }</h1>
-    <h2 class="mb-4">{ pageData.User.Fullname }</h2>
-
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">Welcome to the General Ledger Dashboard</h5>
-            <p class="card-text">Role: { pageData.User.Role }</p>
-            <a href="/journal" class="btn btn-primary">Create New Journal</a>
-            <a href="/journal/list" class="btn btn-secondary">View Journals Pending Posting Entries</a>
-            if pageData.User.Role == "admin" {
-            <a href="/journal/approve" class="btn btn-secondary">Approve Journals</a>
-            }
-            <a href="/journal/posted" class="btn btn-secondary">View Posted Journals by date range</a>
-            <a href="/ladger" class="btn btn-secondary">View Account Ledger</a>
-
+<div class="container py-5">
+    <h1 class="mb-4 text-center">{ pageData.Header }</h1>
+    <h2 class="mb-5 text-center">{ pageData.User.Fullname }</h2>
+    <div class="row justify-content-center g-4">
+        <!-- Card 1 -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <a href="/journal" class="text-decoration-none w-100 text-dark">
+                <div class="card shadow w-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Create New Journal</h5>
+                        <p class="card-text">Start a new journal entry</p>
+                    </div>
+                </div>
+            </a>
         </div>
+        <!-- Card 2 -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <a href="/journal/list" class="text-decoration-none w-100 text-dark">
+                <div class="card shadow w-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">View Pending Journals</h5>
+                        <p class="card-text">Pending posting entries</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-md-4 d-flex justify-content-center">
+            <a href="/journal/list" class="text-decoration-none w-100 text-dark">
+                <div class="card shadow w-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">View Ledger</h5>
+                        <p class="card-text">Account ledger overview</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Add more cards as needed -->
     </div>
 </div>
 }

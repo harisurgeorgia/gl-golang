@@ -2,26 +2,42 @@ package routes
 
 import (
 	"gl/controllers"
-	"gl/session"
+	"gl/middleware"
+	"gl/utils"
+	"gl/views"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterRoutes(r *gin.Engine) {
 
-	r.GET("/login", controllers.LoginPage)
-	r.POST("/login", controllers.LoginSubmit)                      // Assuming you want to handle POST requests as well
-	r.GET("/user", session.AuthRequired(), controllers.UserCreate) // Example route for user creation page
-	r.POST("/user", session.AuthRequired(), controllers.UserSave)  // Example route for user creation submission
-	r.GET("/user/:id", session.AuthRequired(), controllers.GetUser)
-	r.GET("/logout", session.LogoutHandler)
-	r.GET("/forgot-password", controllers.ForgotPassword)
-	r.POST("forgot-password", controllers.ForgotPassword)
-	r.GET("/change-password/:key", controllers.ChangePassword)
-	r.POST("/change-password", controllers.ChangePassword)
-	r.NoRoute(controllers.PageNotFound)
-	r.GET("/journal", controllers.JournalEntry)
-	r.POST("/journal/save", controllers.JournalSave)
-	r.GET("/close-period", controllers.ClosePeriod)
-	r.GET("/dashboard", controllers.Dashboard)
+	// Group with middleware
+	authGroup := r.Group("/")
+	authGroup.Use(middleware.AuthMiddleware())
+	{
+		authGroup.GET("/user", controllers.UserCreate)
+		authGroup.POST("/user", controllers.UserSave)
+		authGroup.GET("/user/:id", controllers.GetUser)
+		authGroup.GET("/dashboard", controllers.Dashboard)
+		authGroup.GET("/journal", controllers.JournalEntry)
+		authGroup.POST("/journal/save", controllers.JournalSave)
+		authGroup.GET("/close-period", controllers.ClosePeriod)
+		authGroup.GET("/logout", controllers.Logout)
+	}
+	// Public routes
+	r.GET("/", middleware.RedirectIfAuthenticated(), controllers.Login)
+	r.POST("/", controllers.LoginSubmit)
+	// route for page not found
+	r.NoRoute(func(c *gin.Context) {
+		utils.Render(c, 404, views.Layout(views.PageData{
+			Title:  "Page Not Found",
+			Header: "404 - Page Not Found",
+		}, views.View404()))
+	})
+
+	// route for unexpected error
+	r.GET("/unexpected-error", func(c *gin.Context) {
+		c.HTML(500, "500.templ", nil)
+	})
+
 }
