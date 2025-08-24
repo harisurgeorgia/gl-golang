@@ -30,9 +30,9 @@ func Dashboard(c *gin.Context) {
 	}
 
 	menus := []views.UserMenu{
-		{MenuDescription: "Dashboard", Icon: "fa fa-home", Url: "/dashboard"},
-		{MenuDescription: "Users", Icon: "fa fa-users", Url: "/user"},
-		{MenuDescription: "Journal", Icon: "fa fa-book", Url: "/journal"},
+		{MenuDescription: "Create Journal", Icon: "fa fa-home", Url: "/journal"},
+		{MenuDescription: "Edit Journal", Icon: "fa fa-users", Url: "/journal/list"},
+		{MenuDescription: "Post Journal", Icon: "fa fa-book", Url: "/journal/list"},
 		{MenuDescription: "Close Period", Icon: "fa fa-calendar", Url: "/close-period"},
 	}
 

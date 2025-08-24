@@ -55,7 +55,43 @@ func DashboardPage(pageData PageData) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h2><div class=\"row justify-content-center g-4\"><!-- Card 1 --><div class=\"col-md-4 d-flex justify-content-center\"><a href=\"/journal\" class=\"text-decoration-none w-100 text-dark\"><div class=\"card shadow w-100\"><div class=\"card-body text-center\"><h5 class=\"card-title\">Create New Journal</h5><p class=\"card-text\">Start a new journal entry</p></div></div></a></div><!-- Card 2 --><div class=\"col-md-4 d-flex justify-content-center\"><a href=\"/journal/list\" class=\"text-decoration-none w-100 text-dark\"><div class=\"card shadow w-100\"><div class=\"card-body text-center\"><h5 class=\"card-title\">View Pending Journals</h5><p class=\"card-text\">Pending posting entries</p></div></div></a></div><!-- Card 3 --><div class=\"col-md-4 d-flex justify-content-center\"><a href=\"/journal/list\" class=\"text-decoration-none w-100 text-dark\"><div class=\"card shadow w-100\"><div class=\"card-body text-center\"><h5 class=\"card-title\">View Ledger</h5><p class=\"card-text\">Account ledger overview</p></div></div></a></div><!-- Add more cards as needed --></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</h2><div class=\"row justify-content-center g-4\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, card := range pageData.Menus {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<div class=\"col-md-4 d-flex justify-content-center\"><a href=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 templ.SafeURL
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinURLErrs(card.Url)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/dashboard.templ`, Line: 12, Col: 30}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "\" class=\"text-decoration-none w-100 text-dark\"><div class=\"card shadow w-100\"><div class=\"card-body text-center\"><h5 class=\"card-title\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(card.MenuDescription)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/dashboard.templ`, Line: 15, Col: 69}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "</h5><p class=\"card-text\">Start a new journal entry</p></div></div></a></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "<!-- Add more cards as needed --></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

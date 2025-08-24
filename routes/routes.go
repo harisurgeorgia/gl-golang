@@ -20,6 +20,7 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.GET("/user/:id", controllers.GetUser)
 		authGroup.GET("/dashboard", controllers.Dashboard)
 		authGroup.GET("/journal", controllers.JournalEntry)
+		authGroup.GET("/journal/list", controllers.JournalList)
 		authGroup.POST("/journal/save", controllers.JournalSave)
 		authGroup.GET("/close-period", controllers.ClosePeriod)
 		authGroup.GET("/logout", controllers.Logout)

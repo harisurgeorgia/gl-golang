@@ -17,6 +17,9 @@ type Journal struct {
 	PostedBy      *string    `db:"posted_by"` // nullable
 	PostedAt      *time.Time `db:"posted_at"` // nullable
 	CreatedAt     time.Time  `db:"created_at"`
+	VerifiedAt    *time.Time `db:"verified_at"`
+	VerifiedBy    *string    `db:"verified_by"`
+	Verified      bool       `db:"verified"`
 	Lines         []JournalLine
 }
 
@@ -59,4 +62,27 @@ func JournalSave(journal Journal, db *sql.DB) error {
 		return err
 	}
 	return nil
+}
+
+// List all journals not posted
+func GetPendingJournals(db *sql.DB) ([]Journal, error) {
+	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, posted, posted_by, posted_at, created_at FROM general_ledger.journals WHERE posted = false`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var journals []Journal
+	for rows.Next() {
+		var journal Journal
+		if err := rows.Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Posted, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt); err != nil {
+			return nil, err
+		}
+
+		// Fetch journal lines for each journal
+
+		journals = append(journals, journal)
+	}
+
+	return journals, nil
 }

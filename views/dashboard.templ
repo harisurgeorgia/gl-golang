@@ -6,40 +6,20 @@ templ DashboardPage(pageData PageData) {
     <h1 class="mb-4 text-center">{ pageData.Header }</h1>
     <h2 class="mb-5 text-center">{ pageData.User.Fullname }</h2>
     <div class="row justify-content-center g-4">
-        <!-- Card 1 -->
+
+        for _, card := range pageData.Menus {
         <div class="col-md-4 d-flex justify-content-center">
-            <a href="/journal" class="text-decoration-none w-100 text-dark">
+            <a href={ card.Url } class="text-decoration-none w-100 text-dark">
                 <div class="card shadow w-100">
                     <div class="card-body text-center">
-                        <h5 class="card-title">Create New Journal</h5>
+                        <h5 class="card-title">{ card.MenuDescription }</h5>
                         <p class="card-text">Start a new journal entry</p>
                     </div>
                 </div>
             </a>
         </div>
-        <!-- Card 2 -->
-        <div class="col-md-4 d-flex justify-content-center">
-            <a href="/journal/list" class="text-decoration-none w-100 text-dark">
-                <div class="card shadow w-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">View Pending Journals</h5>
-                        <p class="card-text">Pending posting entries</p>
-                    </div>
-                </div>
-            </a>
-        </div>
+        }
 
-        <!-- Card 3 -->
-        <div class="col-md-4 d-flex justify-content-center">
-            <a href="/journal/list" class="text-decoration-none w-100 text-dark">
-                <div class="card shadow w-100">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">View Ledger</h5>
-                        <p class="card-text">Account ledger overview</p>
-                    </div>
-                </div>
-            </a>
-        </div>
 
         <!-- Add more cards as needed -->
     </div>

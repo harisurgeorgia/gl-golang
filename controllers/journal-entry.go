@@ -84,3 +84,16 @@ func JournalSave(c *gin.Context) {
 	}
 	c.Redirect(http.StatusFound, "/journal")
 }
+
+func JournalList(c *gin.Context) {
+
+	var data = views.PageData{Title: "Journal List", Header: "Journal Entries"}
+
+	journals, err := models.GetPendingJournals(db.Conn)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to retrieve journals: %v", err)
+		return
+	}
+
+	utils.Render(c, http.StatusOK, views.Layout(data, views.JournalList(journals)))
+}

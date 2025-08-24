@@ -1,0 +1,31 @@
+package views
+import (
+"gl/models"
+"strconv"
+)
+
+templ JournalList(journals []models.Journal) {
+<div class="container">
+    for _, journal := range journals {
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Journal Date: { journal.JournalDate.Format("2006-01-02") }</h5>
+            if journal.JournalNumber != nil {
+            <h6 class="card-subtitle mb-2 text-muted">Reference: { *journal.JournalNumber }</h6>
+            }else{
+            <h6 class="card-subtitle mb-2 text-muted">Reference: N/A</h6>
+            }
+            <p class="card-text">Status: { journal.Posted }</p>
+            <a href={ "/journal/edit/" + strconv.FormatInt(*journal.ID, 10) } class="btn btn-primary">Edit</a>
+            if journal.Posted == true {
+            <a href={ "/journal/post/" + strconv.FormatInt(*journal.ID, 10) } class="btn btn-success ms-2">Post</a>
+            }
+        </div>
+    </div>
+    }
+    if len(journals) == 0 {
+    <p>No journals found.</p>
+    }
+    <div></div>
+</div>
+}
