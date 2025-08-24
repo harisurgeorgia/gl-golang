@@ -22,7 +22,7 @@ vendor/
 # OS generated files
 .DS_Store
 Thumbs.db
-tmp/
+tmp/*
 .env
 # Logs
 *.log
