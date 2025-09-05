@@ -18,13 +18,13 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
       <div class="col-md-4">
         <label for="journal-number" class="form-label">Reference</label>
         if journal.JournalNumber != nil {
-        <input type="text" id="journal-number" name="journal-number" class="form-control" value={*journal.JournalNumber
-          } />
+        <input type="text" id="journal-number" name="journal-number" readonly class="form-control"
+          value={*journal.JournalNumber } />
         }else{
         <input type="text" id="journal-number" name="journal-number" class="form-control" />
         }
       </div>
-
+      {}
 
     </div>
     <div class="row mb-3 align-items-center">
@@ -32,7 +32,8 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
         <label for="description" class="col-form-label">Summary Description</label>
       </div>
       <div class="col-md-10">
-        <input type="text" name="description" id="description" class="form-control" required value="" />
+        <input type="text" name="description" id="description" class="form-control" required value={ journal.Description
+          } />
       </div>
     </div>
     <table class="table table-bordered" id="journal-lines">
@@ -66,7 +67,23 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
         } else {
         for _, item := range journal.Lines {
         <tr>
-          <td><input type="text" name="account_id[]" class="form-control" required value={ item.AccountID } /></td>
+          <td>
+            <select name="accounts_id[]" class="form-select account" aria-label="Default select example"
+              onblur="validateDebitCredit()">
+              <option value="">Select Account</option>
+              for _, account := range accounts {
+              if account.Id == item.AccountID {
+              <option selected value={ strconv.FormatInt(account.Id, 10) }>{ account.AccountCode } - {
+                account.AccountName }
+              </option>
+
+              }else{
+              <option value={ strconv.FormatInt(account.Id, 10) }>{ account.AccountCode } - { account.AccountName }
+              </option>
+              }
+              }
+            </select>
+          </td>
           <td><input type="text" name="line_description[]" class="form-control" required value={ item.Description } />
           </td>
           <td><input type="number" step="0.00" name="debit[]" class="form-control" value={ item.Debit.String() } /></td>

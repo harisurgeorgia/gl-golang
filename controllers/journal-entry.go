@@ -97,3 +97,24 @@ func JournalList(c *gin.Context) {
 
 	utils.Render(c, http.StatusOK, views.Layout(data, views.JournalList(journals)))
 }
+
+// func view a journal entry
+func JournalEdit(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Invalid journal ID")
+		return
+	}
+
+	journal, err := models.GetJournalByID(id, db.Conn)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+		return
+	}
+	//var data = views.PageData{Title: "View Journal", Header: "Journal Entry"}
+	var data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
+	accounts := models.GetAllAccounts(db.Conn)
+	//accounts := models.GetAllAccounts(db.Conn)
+	utils.Render(c, http.StatusOK, views.Layout(data, views.JournalEntryForm(data.Header, "", *journal, accounts)))
+}

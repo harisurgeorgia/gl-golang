@@ -21,6 +21,7 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.GET("/dashboard", controllers.Dashboard)
 		authGroup.GET("/journal", controllers.JournalEntry)
 		authGroup.GET("/journal/list", controllers.JournalList)
+		authGroup.GET("/journal/edit/:id", controllers.JournalEdit)
 		authGroup.POST("/journal/save", controllers.JournalSave)
 		authGroup.GET("/close-period", controllers.ClosePeriod)
 		authGroup.GET("/logout", controllers.Logout)

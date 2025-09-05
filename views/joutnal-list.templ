@@ -10,11 +10,9 @@ templ JournalList(journals []models.Journal) {
     <div class="card mb-3">
         <div class="card-body">
             <h5 class="card-title">Journal Date: { journal.JournalDate.Format("2006-01-02") }</h5>
-            if journal.JournalNumber != nil {
+
             <h6 class="card-subtitle mb-2 text-muted">Reference: { *journal.JournalNumber }</h6>
-            }else{
-            <h6 class="card-subtitle mb-2 text-muted">Reference: N/A</h6>
-            }
+
             <p class="card-text">Status: { journal.Posted }</p>
             if journal.Verified == false {
             <a href={ "/journal/edit/" + strconv.FormatInt(*journal.ID, 10) } class="btn btn-primary">Edit Journal</a>

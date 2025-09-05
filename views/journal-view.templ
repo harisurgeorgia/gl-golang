@@ -1,0 +1,21 @@
+package views
+
+import (
+"gl/models"
+//"strconv"
+)
+templ JournalView(journal models.Journal) {
+<div class="container">
+    <h2 class="mb-4">Journal Entry - { journal.JournalDate.Format("2006-01-02") }</h2>
+    <div class="card mb-3">
+        <div class="card-body">
+            if journal.JournalNumber != nil {
+            <h5 class="card-title">Reference: { *journal.JournalNumber }</h5>
+            } else {
+            <h5 class="card-title">Reference: N/A</h5>
+            }
+        </div>
+    </div>
+
+</div>
+}

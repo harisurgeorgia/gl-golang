@@ -86,3 +86,65 @@ func GetPendingJournals(db *sql.DB) ([]Journal, error) {
 
 	return journals, nil
 }
+
+func GetJournalLines(journalID int64, db *sql.DB) ([]JournalLine, error) {
+	rows, err := db.Query(`SELECT id, journal_id, account_id, debit, credit, line_description, line_number FROM general_ledger.journal_lines WHERE journal_id = $1`, journalID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var lines []JournalLine
+	for rows.Next() {
+		var line JournalLine
+		if err := rows.Scan(&line.ID, &line.JournalID, &line.AccountID, &line.Debit, &line.Credit, &line.Description, &line.LineNumber); err != nil {
+			return nil, err
+		}
+		lines = append(lines, line)
+	}
+
+	return lines, nil
+}
+
+// Get a journal by ID
+func GetJournalByID(journalID int64, db *sql.DB) (*Journal, error) {
+	var journal Journal
+	err := db.QueryRow(`SELECT id, journal_number, journal_date, description, period_id, posted, posted_by, posted_at, created_at FROM general_ledger.journals WHERE id = $1`, journalID).
+		Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Posted, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil // No journal found
+		}
+		return nil, err
+	}
+
+	lines, err := GetJournalLines(journalID, db)
+	if err != nil {
+		return nil, err
+	}
+	journal.Lines = lines
+
+	return &journal, nil
+}
+
+func ListAllJournals(db *sql.DB) ([]Journal, error) {
+	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, posted, posted_by, posted_at, created_at FROM general_ledger.journals ORDER BY journal_date DESC`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var journals []Journal
+	for rows.Next() {
+		var journal Journal
+		if err := rows.Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Posted, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt); err != nil {
+			return nil, err
+		}
+
+		// Fetch journal lines for each journal
+
+		journals = append(journals, journal)
+	}
+
+	return journals, nil
+}
