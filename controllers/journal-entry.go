@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gl/db"
 	"gl/models"
+	"gl/session"
 	"gl/utils"
 	"gl/views"
 	"net/http"
@@ -15,6 +16,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+var data = views.PageData{Script: "/static/js/journal-entry.js"}
 
 func JournalEntry(c *gin.Context) {
 
@@ -61,6 +64,7 @@ func JournalSave(c *gin.Context) {
 		c.String(http.StatusBadRequest, "Invalid date format")
 		return
 	}
+	//err, idStr := strconv.ParseInt(c.PostForm("id"), 10, 64)
 
 	journalNumber := strings.TrimSpace(c.PostForm("journal-number"))
 	description := c.PostForm("description")
@@ -70,19 +74,24 @@ func JournalSave(c *gin.Context) {
 		Description:   description,
 		Lines:         lines,
 	}
+	if idStr := c.PostForm("id"); idStr != "" {
+		if id, err := strconv.ParseInt(idStr, 10, 64); err == nil {
+			journal.ID = &id
+		}
+	}
 	var data = views.PageData{Title: "GL", Header: "Journal Entry"}
 	accounts := models.GetAllAccounts(db.Conn)
 	if strings.TrimSpace(dabitBalance) != strings.TrimSpace(creditBalance) {
 		utils.Render(c, http.StatusOK, views.Layout(data, views.JournalEntryForm(data.Header, "", journal, accounts)))
 		return
 	}
-
-	err = models.JournalSave(journal, db.Conn)
+	var id *int64
+	err, id = models.JournalSave(journal, db.Conn)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to save journal entry: %v", err)
 		return
 	}
-	c.Redirect(http.StatusFound, "/journal")
+	c.Redirect(http.StatusFound, "/journal/edit/"+strconv.FormatInt(*id, 10))
 }
 
 func JournalList(c *gin.Context) {
@@ -112,6 +121,12 @@ func JournalEdit(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
 		return
 	}
+	uid := session.GetSession(c, "user_id")
+	user_id, err := strconv.ParseInt(uid, 10, 64)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+	}
+	journal.CreatedBy = user_id
 	//var data = views.PageData{Title: "View Journal", Header: "Journal Entry"}
 	var data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
 	accounts := models.GetAllAccounts(db.Conn)

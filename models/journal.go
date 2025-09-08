@@ -16,6 +16,7 @@ type Journal struct {
 	Posted        bool       `db:"posted"`
 	PostedBy      *string    `db:"posted_by"` // nullable
 	PostedAt      *time.Time `db:"posted_at"` // nullable
+	CreatedBy     int64      `db:"created_by"`
 	CreatedAt     time.Time  `db:"created_at"`
 	VerifiedAt    *time.Time `db:"verified_at"`
 	VerifiedBy    *string    `db:"verified_by"`
@@ -33,19 +34,28 @@ type JournalLine struct {
 	LineNumber  int             `db:"line_number"`
 }
 
-func JournalSave(journal Journal, db *sql.DB) error {
+func JournalSave(journal Journal, db *sql.DB) (error, *int64) {
 	tx, err := db.Begin()
 	if err != nil {
-		return err
+		return err, nil
+	}
+
+	// if journal.ID not nil delete journal form journal table
+	if journal.ID != nil {
+		_, err = tx.Exec(`DELETE FROM general_ledger.journals WHERE id = $1`, *journal.ID)
+		if err != nil {
+			tx.Rollback()
+			return err, nil
+		}
 	}
 
 	err = tx.QueryRow(
-		`insert into general_ledger.journals (journal_date, description, period_id, posted, posted_by, posted_at) values ($1, $2, $3, $4, $5, $6) RETURNING id
-		`, journal.JournalDate, journal.Description, 1, false, 1, nil).Scan(&journal.ID)
+		`insert into general_ledger.journals (journal_date, description, period_id, posted, posted_by, posted_at, created_by) values ($1, $2, $3, $4, $5, $6, $7) RETURNING id
+		`, journal.JournalDate, journal.Description, 1, false, 1, nil, journal.CreatedBy).Scan(&journal.ID)
 
 	if err != nil {
 		tx.Rollback()
-		return err
+		return err, nil
 	}
 
 	for _, line := range journal.Lines {
@@ -54,14 +64,14 @@ func JournalSave(journal Journal, db *sql.DB) error {
 			`, journal.ID, line.AccountID, line.Debit, line.Credit, line.Description, line.LineNumber)
 		if err != nil {
 			tx.Rollback()
-			return err
+			return err, nil
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
-		return err
+		return err, nil
 	}
-	return nil
+	return nil, journal.ID
 }
 
 // List all journals not posted

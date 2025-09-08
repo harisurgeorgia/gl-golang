@@ -12,6 +12,7 @@ import (
 
 func main() {
 	r := gin.Default()
+	r.Static("/static", "./static")
 	session.SessionInit(r) // Initialize session management
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found; will rely on actual environment variables")

@@ -7,6 +7,7 @@ type PageData struct {
 	Role   string
 	User   UserData
 	Menus  []UserMenu
+	Script string
 }
 type UserData struct {
 	Id       int64

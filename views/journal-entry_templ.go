@@ -47,32 +47,32 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><form action=\"/journal/save\" method=\"post\"><div class=\"row mb-3\"><div class=\"col-md-4\"><label for=\"entry-date\" class=\"form-label\">Date</label> <input type=\"date\" id=\"journal-date\" name=\"journal-date\" class=\"form-control\" required value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><form action=\"/journal/save\" method=\"post\"><input type=\"hidden\" name=\"created_by\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
-		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(journal.JournalDate.Format("2006-01-02"))
+		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(journal.CreatedBy, 10))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 16, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 12, Col: 91}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"></div><div class=\"col-md-4\"><label for=\"journal-number\" class=\"form-label\">Reference</label> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "\"> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if journal.JournalNumber != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<input type=\"text\" id=\"journal-number\" name=\"journal-number\" readonly class=\"form-control\" value=\"")
+		if journal.ID != nil {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<input type=\"hidden\" name=\"id\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(*journal.JournalNumber)
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(*journal.ID, 10))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 22, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 14, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -82,146 +82,137 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		} else {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<input type=\"text\" id=\"journal-number\" name=\"journal-number\" class=\"form-control\">")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div><div class=\"row mb-3 align-items-center\"><div class=\"col-md-2\"><label for=\"description\" class=\"col-form-label\">Summary Description</label></div><div class=\"col-md-10\"><input type=\"text\" name=\"description\" id=\"description\" class=\"form-control\" required value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<div class=\"row mb-3\"><div class=\"col-md-4\"><label for=\"entry-date\" class=\"form-label\">Date</label> <input type=\"date\" id=\"journal-date\" name=\"journal-date\" class=\"form-control\" required value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(journal.Description)
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(journal.JournalDate.Format("2006-01-02"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 35, Col: 120}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 20, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "\"></div></div><table class=\"table table-bordered\" id=\"journal-lines\"><thead class=\"table-light\"><tr><th style=\"width: 25%;\">Account</th><th style=\"width: 35%;\">Description</th><th style=\"width: 20%;\">Debit</th><th style=\"width: 20%;\">Credit</th></tr></thead> <tbody id=\"tbody\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "\"></div><div class=\"col-md-4\"><label for=\"journal-number\" class=\"form-label\">Reference</label> ")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if journal.JournalNumber != nil {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 8, "<input type=\"text\" id=\"journal-number\" name=\"journal-number\" readonly class=\"form-control\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(*journal.JournalNumber)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 26, Col: 39}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<input type=\"text\" id=\"journal-number\" name=\"journal-number\" class=\"form-control\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "</div></div><div class=\"row mb-3 align-items-center\"><div class=\"col-md-2\"><label for=\"description\" class=\"col-form-label\">Summary Description</label></div><div class=\"col-md-10\"><input type=\"text\" name=\"description\" id=\"description\" class=\"form-control\" required value=\"")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var7 string
+		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(journal.Description)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 39, Col: 120}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"></div></div><table class=\"table table-bordered\" id=\"journal-lines\"><thead class=\"table-light\"><tr><th style=\"width: 25%;\">Account</th><th style=\"width: 35%;\">Description</th><th style=\"width: 20%;\">Debit</th><th style=\"width: 20%;\">Credit</th></tr></thead> <tbody id=\"tbody\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		if len(journal.Lines) == 0 {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "<tr><td><select name=\"accounts_id[]\" class=\"form-select account\" aria-label=\"Default select example\" onblur=\"validateDebitCredit()\"><option value=\"\">Select Account</option> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<tr><td><select name=\"accounts_id[]\" class=\"form-select account\" aria-label=\"Default select example\"><option value=\"\">Select Account</option> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			for _, account := range accounts {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<option value=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var6 string
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 56, Col: 63}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "\">")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 56, Col: 87}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, " - ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<option value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountName)
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 56, Col: 113}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 59, Col: 63}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "</option>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "\">")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var9 string
+				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 59, Col: 87}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, " - ")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var10 string
+				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountName)
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 59, Col: 113}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "</option>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "</select></td><td><input type=\"text\" name=\"line_description[]\" class=\"form-control description\" required onblur=\"validateDebitCredit()\"></td><td><input type=\"number\" name=\"debit[]\" class=\"form-control debit\" onblur=\"validateDebitCredit()\"></td><td><input type=\"number\" name=\"credit[]\" class=\"form-control credit\" onblur=\"validateDebitCredit()\"></td></tr>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, "</select></td><td><input type=\"text\" name=\"line_description[]\" class=\"form-control description\" required></td><td><input type=\"number\" name=\"debit[]\" class=\"form-control debit\"></td><td><input type=\"number\" name=\"credit[]\" class=\"form-control credit\"></td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
 			for _, item := range journal.Lines {
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 15, "<tr><td><select name=\"accounts_id[]\" class=\"form-select account\" aria-label=\"Default select example\" onblur=\"validateDebitCredit()\"><option value=\"\">Select Account</option> ")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "<tr><td><select name=\"accounts_id[]\" class=\"form-select account\" aria-label=\"Default select example\"><option value=\"\">Select Account</option> ")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				for _, account := range accounts {
 					if account.Id == item.AccountID {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 16, "<option selected value=\"")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						var templ_7745c5c3_Var9 string
-						templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 76, Col: 72}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 17, "\">")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						var templ_7745c5c3_Var10 string
-						templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 76, Col: 96}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 18, " - ")
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<option selected value=\"")
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
 						var templ_7745c5c3_Var11 string
-						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(
-							account.AccountName)
+						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 77, Col: 35}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 77, Col: 72}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 19, "</option>")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-					} else {
-						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 20, "<option value=\"")
-						if templ_7745c5c3_Err != nil {
-							return templ_7745c5c3_Err
-						}
-						var templ_7745c5c3_Var12 string
-						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
-						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 81, Col: 63}
-						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -229,12 +220,12 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var13 string
-						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
+						var templ_7745c5c3_Var12 string
+						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 81, Col: 87}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 77, Col: 96}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -242,12 +233,13 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
-						var templ_7745c5c3_Var14 string
-						templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountName)
+						var templ_7745c5c3_Var13 string
+						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(
+							account.AccountName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 81, Col: 113}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 78, Col: 35}
 						}
-						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
@@ -255,67 +247,111 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						if templ_7745c5c3_Err != nil {
 							return templ_7745c5c3_Err
 						}
+					} else {
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "<option value=\"")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var14 string
+						templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 82, Col: 63}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\">")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var15 string
+						templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 82, Col: 87}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, " - ")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						var templ_7745c5c3_Var16 string
+						templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountName)
+						if templ_7745c5c3_Err != nil {
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 82, Col: 113}
+						}
+						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
+						templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "</option>")
+						if templ_7745c5c3_Err != nil {
+							return templ_7745c5c3_Err
+						}
 					}
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 24, "</select></td><td><input type=\"text\" name=\"line_description[]\" class=\"form-control\" required value=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var15 string
-				templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(item.Description)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 87, Col: 113}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 25, "\"></td><td><input type=\"number\" step=\"0.00\" name=\"debit[]\" class=\"form-control\" value=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var16 string
-				templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(item.Debit.String())
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 89, Col: 110}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 26, "\"></td><td><input type=\"number\" name=\"credit[]\" class=\"form-control\" value=\"")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "</select></td><td><input type=\"text\" name=\"line_description[]\" class=\"form-control description\" required value=\"")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var17 string
-				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(item.Credit.String())
+				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(item.Description)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 91, Col: 98}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 89, Col: 30}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 27, "\"></td></tr>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "\"></td><td><input type=\"number\" step=\"0.00\" name=\"debit[]\" class=\"form-control debit\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var18 string
+				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(item.Debit.String())
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 91, Col: 116}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 30, "\"></td><td><input type=\"number\" name=\"credit[]\" class=\"form-control credit\" value=\"")
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				var templ_7745c5c3_Var19 string
+				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(item.Credit.String())
+				if templ_7745c5c3_Err != nil {
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 94, Col: 105}
+				}
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 31, "\"></td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 28, "<tr id=\"balance-row\"><td></td><td class=\"text-primary\" style=\"padding: 17px;\"><strong>Balance</strong></td><td><input type=\"number\" name=\"debit-bal\" class=\"form-control\" readonly value=\"0.00\" tabindex=\"-1\"></td><td><input type=\"number\" name=\"credit-bal\" class=\"form-control\" readonly value=\"0.00\" tabindex=\"-1\"></td></tr></tbody></table><div class=\"mb-3\"><button type=\"button\" id=\"add-line\" class=\"btn btn-secondary\">Add Line</button> <span class=\"text-danger\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<tr id=\"balance-row\"><td></td><td class=\"text-primary\" style=\"padding: 17px;\"><strong>Balance</strong></td><td><input type=\"number\" name=\"debit-bal\" class=\"form-control\" readonly value=\"0.00\" tabindex=\"-1\"></td><td><input type=\"number\" name=\"credit-bal\" class=\"form-control\" readonly value=\"0.00\" tabindex=\"-1\"></td></tr></tbody></table><div class=\"mb-3\"><button type=\"button\" id=\"add-line\" class=\"btn btn-secondary\">Add Line</button> <span class=\"text-danger\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var18 string
-		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(msg)
+		var templ_7745c5c3_Var20 string
+		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(msg)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 108, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 111, Col: 37}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 29, "</span></div><button type=\"submit\" class=\"btn btn-primary\">Save Journal Entrys</button></form></div><script>\n  document.getElementById('add-line').addEventListener('click', () => {\n\n    const table = document.querySelector(\"#journal-lines\");\n    const tbody = table.querySelector(\"tbody\");\n    const rows = tbody.rows; // Exclude the last row (balance row)\n    const warningRows = document.querySelectorAll(\".table-warning\");\n    if (warningRows.length > 0) {\n\n      return; // Prevent adding a new line if there are warning rows\n    }\n    const firstRow = rows[0]; // first data row\n    const clonedRow = firstRow.cloneNode(true);\n\n\n    // Clear input values in the clone\n    const inputs = clonedRow.querySelectorAll('input[type=\"number\"]');\n    inputs.forEach(input => input.value = \"0.00\");\n    const textInputs = clonedRow.querySelectorAll('input[type=\"text\"], input[type=\"select\"]');\n    textInputs.forEach(input => input.value = \"\");\n\n    // Insert before last row\n    const lastRow = rows[rows.length - 1];\n    tbody.insertBefore(clonedRow, lastRow);\n\n    attachBlurValidation(clonedRow);\n\n  });\n\n  function attachBlurValidation(row) {\n    inputs = row.querySelectorAll('input');\n    inputs.forEach(input => {\n      //if (input.classList.contains('debit') || input.classList.contains('credit')) {\n      input.addEventListener('blur', validateDebitCredit);\n      //}\n    });\n    //const debitInput = row.querySelector('.debit');\n    //const creditInput = row.querySelector('.credit');\n\n    /* if (debitInput) {\n      debitInput.addEventListener('blur', validateDebitCredit);\n    }\n    if (creditInput) {\n      creditInput.addEventListener('blur', validateDebitCredit);\n    } */\n  }\n\n  function validateDebitCredit() {\n    let debitTotal = 0;\n    let creditTotal = 0;\n\n    document.querySelectorAll(\"tbody tr:not(:last-child)\").forEach((row) => {\n      const debitInput = row.querySelector(\".debit\");\n      const creditInput = row.querySelector(\".credit\");\n      const accountInput = row.querySelector(\".account\");\n      const descriptionInput = row.querySelector(\".description\");\n\n      //override row.querySelector(\".debit\") to decimel place\n\n\n      //if (!checkEmptyInputs(row)) { return }\n      const debit = parseFloat(debitInput?.value) || 0;\n      const credit = parseFloat(creditInput?.value) || 0;\n\n      if (isNaN(debit) || debit == 0 || debit == \"\") {\n        debitInput.value = \"0.00\";\n      } else {\n        debitInput.value = debit.toFixed(2); // Ensure two decimal places\n      }\n      if (isNaN(credit) || credit == 0 || credit == \"\") {\n        creditInput.value = \"0.00\";\n      } else {\n\n        creditInput.value = credit.toFixed(2); // Ensure two decimal places if not error converted\n      }\n\n      //checkEmptyInputs()\n      // Sum totals\n      debitTotal += debit;\n      creditTotal += credit;\n\n      // Validation: either debit or credit must be filled (not both or neither)\n      if ((debit > 0 && credit > 0) || (debit === 0 && credit === 0)) {\n        row.classList.add(\"table-warning\");\n      } else {\n        row.classList.remove(\"table-warning\");\n      }\n\n      row = document.querySelector(\"#balance-row\");\n      if (debitTotal != creditTotal) {\n        row.classList.add(\"invalid-row\");\n      } else {\n        row.classList.remove(\"invalid-row\");\n        debitInput.setCustomValidity(\"\");\n        creditInput.setCustomValidity(\"\");\n      }\n    });\n\n    document.querySelector(\"input[name='debit-bal']\").value = debitTotal.toFixed(2);\n    document.querySelector(\"input[name='credit-bal']\").value = creditTotal.toFixed(2);\n  }\n\n  document.querySelector('button[type=\"submit\"]').addEventListener('click', (event) => {\n    const debitTotal = document.querySelector(\"input[name='debit-bal']\")\n    const creditTotal = document.querySelector(\"input[name='credit-bal']\")\n    const balacneRow = document.querySelector(\"#balance-row\");\n\n    document.querySelectorAll(\"tbody tr:not(:last-child)\").forEach((row) => {\n      const debitInput = row.querySelector(\".debit\");\n      const creditInput = row.querySelector(\".credit\");\n\n      // Check if either debit or credit is filled\n      if ((parseFloat(debitInput.value) || 0) > 0 || (parseFloat(creditInput.value) || 0) > 0) {\n        row.classList.remove(\"invalid-row\");\n      } else {\n        row.classList.add(\"invalid-row\");\n        event.preventDefault(); // Prevent form submission if no debit or credit is filled\n        return; // Exit the loop early\n      }\n\n      // Check for empty inputs\n    })\n    if (debitTotal.value != creditTotal.value || debitTotal.value == \"\" || creditTotal.value == \"\" || parseFloat(debitTotal.value) == 0 || parseFloat(creditTotal.value) == 0) {\n      balacneRow.classList.add(\"invalid-row\");\n      event.preventDefault(); // Prevent form submission if totals do not match\n    } else {\n      balacneRow.classList.remove(\"invalid-row\");\n    }\n  })\n\n  function checkEmptyInputs(row) {\n    if (row.querySelector(\".account\").value == \"\" || row.querySelector(\".description\").value == \"\") {\n      row.classList.add(\"table-warning\");\n      return false; // Empty inputs found\n    } else {\n      row.classList.remove(\"table-warning\");\n      return true; // No empty inputs\n    }\n  }\n\n  function checkWarningRows() {\n    const warningRows = document.querySelectorAll(\".table-warning\");\n    if (warningRows.length > 0) {\n      return false; // There are warning rows\n    }\n    return true; // No warning rows\n  }\n\n</script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</span></div><button type=\"submit\" class=\"btn btn-primary\">Save Journal Entrys</button></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
