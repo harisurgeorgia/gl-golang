@@ -23,5 +23,7 @@ type UserMenu struct {
 	Url             string
 	Icon            string
 	Active          bool
-	IsAdmin         bool
+	ItemType        string
+	UserType        string
+	Page            string
 }

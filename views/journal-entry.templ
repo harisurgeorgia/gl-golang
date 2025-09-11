@@ -7,7 +7,11 @@ import (
 
 templ JournalEntryForm(header, msg string, journal models.Journal, accounts []models.Account) {
 <div class="container">
-  <h1 class="mb-4">{ header }</h1>
+  <div class="d-flex justify-content-center">
+    <h1 class="m-4 heading">{ header }</h1>
+  </div>
+  <!-- centered heading with background -->
+
   <form action="/journal/save" method="post">
     <input type="hidden" name="created_by" value={ strconv.FormatInt(journal.CreatedBy, 10) } />
     if journal.ID != nil {
@@ -40,8 +44,8 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
           } />
       </div>
     </div>
-    <table class="table table-bordered" id="journal-lines">
-      <thead class="table-light">
+    <table class="table table-bordered table-primary" id="journal-lines">
+      <thead class="primary">
         <tr>
           <th style="width: 25%;">Account</th>
           <th style="width: 35%;">Description</th>
@@ -98,7 +102,7 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
         }
 
         }
-        <tr id="balance-row">
+        <tr id="balance-row" class="table-primary">
           <td></td>
           <td class="text-primary" style="padding: 17px;"><strong>Balance</strong></td>
           <td><input type="number" name="debit-bal" class="form-control" readonly value="0.00" tabindex="-1" /></td>
@@ -106,11 +110,20 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
         </tr>
       </tbody>
     </table>
-    <div class="mb-3">
-      <button type="button" id="add-line" class="btn btn-secondary">Add Line</button>
-      <span class="text-danger">{ msg }</span>
+    <span class="text-danger">{ msg }</span>
+    <div class="mb-3 p-3 border">
+
+      <div class="row text-center">
+        <div class="col-md-6">
+          <button type="button" id="add-line" class="btn btn-primary w-50">Add Line</button>
+        </div>
+        <div class="col-md-6 d-none" id="save-status">
+          <button type="button" class="btn btn-success w-50">Save</button>
+        </div>
+      </div>
+
     </div>
-    <button type="submit" class="btn btn-primary">Save Journal Entrys</button>
+
   </form>
 </div>
 

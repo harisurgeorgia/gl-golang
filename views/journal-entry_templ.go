@@ -34,27 +34,27 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"container\"><h1 class=\"mb-4\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"container\"><div class=\"d-flex justify-content-center\"><h1 class=\"m-4 heading\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(header)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 10, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 11, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1><form action=\"/journal/save\" method=\"post\"><input type=\"hidden\" name=\"created_by\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1></div><!-- centered heading with background --><form action=\"/journal/save\" method=\"post\"><input type=\"hidden\" name=\"created_by\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(journal.CreatedBy, 10))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 12, Col: 91}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 16, Col: 91}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
@@ -72,7 +72,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(*journal.ID, 10))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 14, Col: 77}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 18, Col: 77}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -90,7 +90,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(journal.JournalDate.Format("2006-01-02"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 20, Col: 50}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 24, Col: 50}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
@@ -108,7 +108,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(*journal.JournalNumber)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 26, Col: 39}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 30, Col: 39}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -131,13 +131,13 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(journal.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 39, Col: 120}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 43, Col: 120}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"></div></div><table class=\"table table-bordered\" id=\"journal-lines\"><thead class=\"table-light\"><tr><th style=\"width: 25%;\">Account</th><th style=\"width: 35%;\">Description</th><th style=\"width: 20%;\">Debit</th><th style=\"width: 20%;\">Credit</th></tr></thead> <tbody id=\"tbody\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "\"></div></div><table class=\"table table-bordered table-primary\" id=\"journal-lines\"><thead class=\"primary\"><tr><th style=\"width: 25%;\">Account</th><th style=\"width: 35%;\">Description</th><th style=\"width: 20%;\">Debit</th><th style=\"width: 20%;\">Credit</th></tr></thead> <tbody id=\"tbody\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -154,7 +154,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 				var templ_7745c5c3_Var8 string
 				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 59, Col: 63}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 63, Col: 63}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
@@ -167,7 +167,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 				var templ_7745c5c3_Var9 string
 				templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 59, Col: 87}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 63, Col: 87}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 				if templ_7745c5c3_Err != nil {
@@ -180,7 +180,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 				var templ_7745c5c3_Var10 string
 				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountName)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 59, Col: 113}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 63, Col: 113}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 				if templ_7745c5c3_Err != nil {
@@ -210,7 +210,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						var templ_7745c5c3_Var11 string
 						templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 77, Col: 72}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 81, Col: 72}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 						if templ_7745c5c3_Err != nil {
@@ -223,7 +223,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						var templ_7745c5c3_Var12 string
 						templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 77, Col: 96}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 81, Col: 96}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 						if templ_7745c5c3_Err != nil {
@@ -237,7 +237,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(
 							account.AccountName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 78, Col: 35}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 82, Col: 35}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 						if templ_7745c5c3_Err != nil {
@@ -255,7 +255,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						var templ_7745c5c3_Var14 string
 						templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(account.Id, 10))
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 82, Col: 63}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 86, Col: 63}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 						if templ_7745c5c3_Err != nil {
@@ -268,7 +268,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						var templ_7745c5c3_Var15 string
 						templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountCode)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 82, Col: 87}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 86, Col: 87}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 						if templ_7745c5c3_Err != nil {
@@ -281,7 +281,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 						var templ_7745c5c3_Var16 string
 						templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(account.AccountName)
 						if templ_7745c5c3_Err != nil {
-							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 82, Col: 113}
+							return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 86, Col: 113}
 						}
 						_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 						if templ_7745c5c3_Err != nil {
@@ -300,7 +300,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 				var templ_7745c5c3_Var17 string
 				templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(item.Description)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 89, Col: 30}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 93, Col: 30}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
 				if templ_7745c5c3_Err != nil {
@@ -313,7 +313,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 				var templ_7745c5c3_Var18 string
 				templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(item.Debit.String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 91, Col: 116}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 95, Col: 116}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 				if templ_7745c5c3_Err != nil {
@@ -326,7 +326,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 				var templ_7745c5c3_Var19 string
 				templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(item.Credit.String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 94, Col: 105}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 98, Col: 105}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 				if templ_7745c5c3_Err != nil {
@@ -338,20 +338,20 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<tr id=\"balance-row\"><td></td><td class=\"text-primary\" style=\"padding: 17px;\"><strong>Balance</strong></td><td><input type=\"number\" name=\"debit-bal\" class=\"form-control\" readonly value=\"0.00\" tabindex=\"-1\"></td><td><input type=\"number\" name=\"credit-bal\" class=\"form-control\" readonly value=\"0.00\" tabindex=\"-1\"></td></tr></tbody></table><div class=\"mb-3\"><button type=\"button\" id=\"add-line\" class=\"btn btn-secondary\">Add Line</button> <span class=\"text-danger\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 32, "<tr id=\"balance-row\" class=\"table-primary\"><td></td><td class=\"text-primary\" style=\"padding: 17px;\"><strong>Balance</strong></td><td><input type=\"number\" name=\"debit-bal\" class=\"form-control\" readonly value=\"0.00\" tabindex=\"-1\"></td><td><input type=\"number\" name=\"credit-bal\" class=\"form-control\" readonly value=\"0.00\" tabindex=\"-1\"></td></tr></tbody></table><span class=\"text-danger\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var20 string
 		templ_7745c5c3_Var20, templ_7745c5c3_Err = templ.JoinStringErrs(msg)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 111, Col: 37}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/journal-entry.templ`, Line: 113, Col: 35}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var20))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</span></div><button type=\"submit\" class=\"btn btn-primary\">Save Journal Entrys</button></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</span><div class=\"mb-3 p-3 border\"><div class=\"row text-center\"><div class=\"col-md-6\"><button type=\"button\" id=\"add-line\" class=\"btn btn-primary w-50\">Add Line</button></div><div class=\"col-md-6 d-none\" id=\"save-status\"><button type=\"button\" class=\"btn btn-success w-50\">Save</button></div></div></div></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

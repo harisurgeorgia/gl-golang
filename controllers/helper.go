@@ -1,24 +1,20 @@
+// helpers.go (or in same controllers file)
 package controllers
 
 import (
+	"fmt"
 	"gl/session"
-	"gl/utils"
 	"gl/views"
-	"log"
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-func Dashboard(c *gin.Context) {
-
+func getBasePageData(c *gin.Context, title, header string) (views.PageData, error) {
 	idStr := session.GetSession(c, "user_id")
 	idInt64, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		log.Printf("Invalid session id: %v", idStr)
-		c.Redirect(http.StatusBadRequest, "/unexpected-error")
-		return
+		return views.PageData{}, fmt.Errorf("invalid user_id in session: %w", err)
 	}
 
 	user := views.UserData{
@@ -26,22 +22,20 @@ func Dashboard(c *gin.Context) {
 		Email:    session.GetSession(c, "user_email"),
 		Fullname: session.GetSession(c, "user_name"),
 		Role:     session.GetSession(c, "user_role"),
-		Password: "", // probably don't store password in struct from session
 	}
 
 	menus := []views.UserMenu{
-		{MenuDescription: "Create Journal", Icon: "fa fa-home", Url: "/journal", UserType: "editor", ItemType: "buttom", Page: "journal-entry"},
+		{MenuDescription: "Create Journal", Icon: "fa fa-home", Url: "/journal", UserType: "editor", ItemType: "button", Page: "journal-entry"},
 		{MenuDescription: "Edit Journal", Icon: "fa fa-users", Url: "/journal/list"},
 		{MenuDescription: "Post Journal", Icon: "fa fa-book", Url: "/journal/list"},
 		{MenuDescription: "Close Period", Icon: "fa fa-calendar", Url: "/close-period"},
 	}
 
-	data := views.PageData{
-		Title:  "Dashboard",
-		Header: "Dashboard",
+	return views.PageData{
+		Title:  title,
+		Header: header,
 		User:   user,
 		Menus:  menus,
-	}
-
-	utils.Render(c, 200, views.Layout(views.Nav(menus), data, views.DashboardPage(data))) // Assuming msg is a string variable with a welcome message
+		Script: "/static/js/journal-entry.js",
+	}, nil
 }

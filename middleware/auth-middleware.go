@@ -13,7 +13,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		sess := sessions.Default(c)
 		if sess.Get("user_id") == nil {
 			// not logged in → redirect or abort
-			c.Redirect(http.StatusSeeOther, "/login")
+			c.Redirect(http.StatusSeeOther, "/")
 			c.Abort()
 			return
 		}

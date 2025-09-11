@@ -31,7 +31,7 @@ func RegisterRoutes(r *gin.Engine) {
 	r.POST("/", controllers.LoginSubmit)
 	// route for page not found
 	r.NoRoute(func(c *gin.Context) {
-		utils.Render(c, 404, views.Layout(views.PageData{
+		utils.Render(c, 404, views.Layout(nil, views.PageData{
 			Title:  "Page Not Found",
 			Header: "404 - Page Not Found",
 		}, views.View404()))

@@ -17,16 +17,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var data = views.PageData{Script: "/static/js/journal-entry.js"}
-
 func JournalEntry(c *gin.Context) {
-
-	var data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
-
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry")
 	var journal = models.Journal{JournalDate: time.Now()}
+	if err != nil {
+
+	}
+
+	//data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
 
 	accounts := models.GetAllAccounts(db.Conn)
-	utils.Render(c, http.StatusOK, views.Layout(data, views.JournalEntryForm(data.Header, "", journal, accounts)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
 }
 
 func JournalSave(c *gin.Context) {
@@ -79,10 +80,15 @@ func JournalSave(c *gin.Context) {
 			journal.ID = &id
 		}
 	}
-	var data = views.PageData{Title: "GL", Header: "Journal Entry"}
+
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry")
+	if err != nil {
+
+	}
+	//data = views.PageData{Title: "GL", Header: "Journal Entry"}
 	accounts := models.GetAllAccounts(db.Conn)
 	if strings.TrimSpace(dabitBalance) != strings.TrimSpace(creditBalance) {
-		utils.Render(c, http.StatusOK, views.Layout(data, views.JournalEntryForm(data.Header, "", journal, accounts)))
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
 		return
 	}
 	var id *int64
@@ -96,7 +102,7 @@ func JournalSave(c *gin.Context) {
 
 func JournalList(c *gin.Context) {
 
-	var data = views.PageData{Title: "Journal List", Header: "Journal Entries"}
+	data := views.PageData{Title: "Journal List", Header: "Journal Entries"}
 
 	journals, err := models.GetPendingJournals(db.Conn)
 	if err != nil {
@@ -104,11 +110,15 @@ func JournalList(c *gin.Context) {
 		return
 	}
 
-	utils.Render(c, http.StatusOK, views.Layout(data, views.JournalList(journals)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus), data, views.JournalList(journals)))
 }
 
 // func view a journal entry
 func JournalEdit(c *gin.Context) {
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry")
+	if err != nil {
+
+	}
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
@@ -117,8 +127,12 @@ func JournalEdit(c *gin.Context) {
 	}
 
 	journal, err := models.GetJournalByID(id, db.Conn)
-	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+	if err != nil || journal == nil {
+		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
+			Title:  "Page Not Found",
+			Header: "404 - Page Not Found",
+		}, views.View404()))
+
 		return
 	}
 	uid := session.GetSession(c, "user_id")
@@ -127,9 +141,7 @@ func JournalEdit(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
 	}
 	journal.CreatedBy = user_id
-	//var data = views.PageData{Title: "View Journal", Header: "Journal Entry"}
-	var data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
 	accounts := models.GetAllAccounts(db.Conn)
-	//accounts := models.GetAllAccounts(db.Conn)
-	utils.Render(c, http.StatusOK, views.Layout(data, views.JournalEntryForm(data.Header, "", *journal, accounts)))
+
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus), data, views.JournalEntryForm(data.Header, "", *journal, accounts)))
 }

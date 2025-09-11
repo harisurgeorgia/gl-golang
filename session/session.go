@@ -46,7 +46,7 @@ func LogoutHandler(c *gin.Context) {
 	}
 
 	// 4) Redirect or render a logout confirmation
-	c.Redirect(http.StatusSeeOther, "/login")
+	c.Redirect(http.StatusSeeOther, "/")
 }
 
 func GetSession(c *gin.Context, key string) string {

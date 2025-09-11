@@ -8,7 +8,7 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func Layout(data PageData, content templ.Component) templ.Component {
+func Layout(nav templ.Component, data PageData, content templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -36,17 +36,17 @@ func Layout(data PageData, content templ.Component) templ.Component {
 		var templ_7745c5c3_Var2 string
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(data.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 7, Col: 20}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/layout.templ`, Line: 8, Col: 20}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css\" rel=\"stylesheet\"><style>\n\t\tinput[type=number]::-webkit-inner-spin-button,\n\t\tinput[type=number]::-webkit-outer-spin-button {\n\t\t\t-webkit-appearance: none;\n\t\t\tmargin: 0;\n\t\t\ttext-align: right;\n\t\t}\n\n\t\tinput[type=number] {\n\t\t\t-moz-appearance: textfield;\n\t\t\t/* Firefox */\n\t\t\ttext-align: right;\n\t\t}\n\n\t\t.invalid-row {\n\t\t\tbackground-color: #ffdddd;\n\t\t}\n\t</style></head><body>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css\" rel=\"stylesheet\"><style>\n\t\tinput[type=number]::-webkit-inner-spin-button,\n\t\tinput[type=number]::-webkit-outer-spin-button {\n\t\t\t-webkit-appearance: none;\n\t\t\tmargin: 0;\n\t\t\ttext-align: right;\n\t\t}\n\n\t\tinput[type=number] {\n\t\t\t-moz-appearance: textfield;\n\t\t\t/* Firefox */\n\t\t\ttext-align: right;\n\t\t}\n\n\n\n\t\t.heading {\n\t\t\ttext-align: center;\n\t\t\ttext-transform: uppercase;\n\t\t\tpadding: 5px 20px 5px 20px;\n\t\t\tborder-radius: 5px;\n\t\t\tborder: 4px solid rgb(237, 139, 11);\n\t\t\tbackground-color: antiquewhite;\n\n\t\t}\n\t</style></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Header().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Nav(data.Menus).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -66,17 +66,7 @@ func Layout(data PageData, content templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js\"></script>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if data.Script != "" {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<script src=\"{ *data.Script }\"></script>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "<script src=\"https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js\"></script><script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js\"></script><script src=\"/static/js/journalEntry.js\"></script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

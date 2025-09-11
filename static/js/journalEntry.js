@@ -7,7 +7,8 @@ const balanceRow = document.querySelector("#balance-row");
 function recalcTotals() {
   let debitTotal = 0;
   let creditTotal = 0;
-
+  //document.getElementById("save-status").classList.remove("d-none");
+  //document.getElementById("save-status").classList.add("btn-primary");
   tbody.querySelectorAll("tr:not(#balance-row)").forEach((row) => {
     const debitInput = row.querySelector(".debit");
     const creditInput = row.querySelector(".credit");
@@ -39,9 +40,11 @@ function recalcTotals() {
   creditTotalInput.value = creditTotal.toFixed(2);
 
   if (debitTotal !== creditTotal) {
-    balanceRow.classList.add("invalid-row");
+    balanceRow.classList.remove("table-success");
+    balanceRow.classList.add("table-danger");
   } else {
-    balanceRow.classList.remove("invalid-row");
+    balanceRow.classList.remove("table-danger");
+    balanceRow.classList.add("table-success");
   }
 }
 
@@ -52,6 +55,7 @@ tbody.addEventListener("input", (e) => {
       e.target.classList.contains(cls)
     )
   ) {
+    document.getElementById("save-status").classList.remove("d-none");
     recalcTotals();
   }
 });
@@ -66,6 +70,7 @@ tbody.addEventListener(
     ) {
       const val = parseFloat(e.target.value) || 0;
       e.target.value = val.toFixed(2);
+      document.getElementById("save-status").classList.remove("d-none");
       recalcTotals();
     }
   },
