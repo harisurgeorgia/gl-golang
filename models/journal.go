@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"gl/db"
 	"time"
 
 	"github.com/shopspring/decimal"
@@ -157,4 +158,10 @@ func ListAllJournals(db *sql.DB) ([]Journal, error) {
 	}
 
 	return journals, nil
+}
+
+func FindJournalByJournalNumber(s string) (int64, error) {
+	var id int64
+	err := db.Conn.QueryRow("SELECT id FROM general_ledger.journals WHERE journal_number = $1", s).Scan(&id)
+	return id, err
 }
