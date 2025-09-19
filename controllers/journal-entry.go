@@ -18,7 +18,7 @@ import (
 )
 
 func JournalEntry(c *gin.Context) {
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry")
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal")
 	var journal = models.Journal{JournalDate: time.Now()}
 	if err != nil {
 
@@ -27,7 +27,7 @@ func JournalEntry(c *gin.Context) {
 	//data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
 
 	accounts := models.GetAllAccounts(db.Conn)
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(nil), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
 }
 
 func JournalSave(c *gin.Context) {
@@ -81,7 +81,7 @@ func JournalSave(c *gin.Context) {
 		}
 	}
 
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry")
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal")
 	if err != nil {
 
 	}
@@ -115,7 +115,7 @@ func JournalList(c *gin.Context) {
 
 // func view a journal entry
 func JournalEdit(c *gin.Context) {
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry")
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal")
 	if err != nil {
 
 	}

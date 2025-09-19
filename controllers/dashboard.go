@@ -29,19 +29,12 @@ func Dashboard(c *gin.Context) {
 		Password: "", // probably don't store password in struct from session
 	}
 
-	menus := []views.UserMenu{
-		{MenuDescription: "Create Journal", Icon: "fa fa-home", Url: "/journal", UserType: "editor", ItemType: "buttom", Page: "journal-entry"},
-		{MenuDescription: "Edit Journal", Icon: "fa fa-users", Url: "/journal/list"},
-		{MenuDescription: "Post Journal", Icon: "fa fa-book", Url: "/journal/list"},
-		{MenuDescription: "Close Period", Icon: "fa fa-calendar", Url: "/close-period"},
-	}
-
 	data := views.PageData{
 		Title:  "Dashboard",
 		Header: "Dashboard",
 		User:   user,
-		Menus:  menus,
+		Menus:  nil,
 	}
 
-	utils.Render(c, 200, views.Layout(views.Nav(menus), data, views.DashboardPage(data))) // Assuming msg is a string variable with a welcome message
+	utils.Render(c, 200, views.Layout(views.Nav(nil), data, views.DashboardPage(data))) // Assuming msg is a string variable with a welcome message
 }

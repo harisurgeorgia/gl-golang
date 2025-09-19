@@ -1,12 +1,14 @@
 // views/types.go
 package views
 
+import "gl/models"
+
 type PageData struct {
 	Title  string
 	Header string
 	Role   string
 	User   UserData
-	Menus  []UserMenu
+	Menus  []models.UserMenu
 	Script string
 }
 type UserData struct {
@@ -15,15 +17,4 @@ type UserData struct {
 	Fullname string
 	Password string
 	Role     string
-}
-
-type UserMenu struct {
-	Id              int64
-	MenuDescription string
-	Url             string
-	Icon            string
-	Active          bool
-	ItemType        string
-	UserType        string
-	Page            string
 }

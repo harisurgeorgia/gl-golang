@@ -3,6 +3,8 @@ package controllers
 
 import (
 	"fmt"
+	"gl/db"
+	"gl/models"
 	"gl/session"
 	"gl/views"
 	"strconv"
@@ -10,7 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getBasePageData(c *gin.Context, title, header string) (views.PageData, error) {
+func getBasePageData(c *gin.Context, title, header, page string) (views.PageData, error) {
 	idStr := session.GetSession(c, "user_id")
 	idInt64, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
@@ -24,12 +26,14 @@ func getBasePageData(c *gin.Context, title, header string) (views.PageData, erro
 		Role:     session.GetSession(c, "user_role"),
 	}
 
-	menus := []views.UserMenu{
-		{MenuDescription: "Create Journal", Icon: "fa fa-home", Url: "/journal", UserType: "editor", ItemType: "button", Page: "journal-entry"},
+	menus, err := models.GetUserMenu(db.Conn, page)
+
+	/* 	menus := []views.UserMenu{
+		{MenuDescription: "New", Icon: "fa fa-home", Url: "/journal", UserType: "editor", ItemType: "link", Page: "journal-entry"},
 		{MenuDescription: "Edit Journal", Icon: "fa fa-users", Url: "/journal/list"},
 		{MenuDescription: "Post Journal", Icon: "fa fa-book", Url: "/journal/list"},
 		{MenuDescription: "Close Period", Icon: "fa fa-calendar", Url: "/close-period"},
-	}
+	} */
 
 	return views.PageData{
 		Title:  title,
