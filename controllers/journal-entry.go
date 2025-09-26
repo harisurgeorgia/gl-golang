@@ -27,7 +27,7 @@ func JournalEntry(c *gin.Context) {
 	//data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
 
 	accounts := models.GetAllAccounts(db.Conn)
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(nil), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
 }
 
 func JournalSave(c *gin.Context) {
@@ -88,7 +88,7 @@ func JournalSave(c *gin.Context) {
 	//data = views.PageData{Title: "GL", Header: "Journal Entry"}
 	accounts := models.GetAllAccounts(db.Conn)
 	if strings.TrimSpace(dabitBalance) != strings.TrimSpace(creditBalance) {
-		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
 		return
 	}
 	var id *int64
@@ -110,7 +110,7 @@ func JournalList(c *gin.Context) {
 		return
 	}
 
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus), data, views.JournalList(journals)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalList(journals)))
 }
 
 // func view a journal entry
@@ -143,5 +143,5 @@ func JournalEdit(c *gin.Context) {
 	journal.CreatedBy = user_id
 	accounts := models.GetAllAccounts(db.Conn)
 
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus), data, views.JournalEntryForm(data.Header, "", *journal, accounts)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", *journal, accounts)))
 }

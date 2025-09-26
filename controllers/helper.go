@@ -14,6 +14,17 @@ import (
 
 func getBasePageData(c *gin.Context, title, header, page string) (views.PageData, error) {
 	idStr := session.GetSession(c, "user_id")
+	if idStr == "" {
+		return views.PageData{
+			Title:  title,
+			Header: header,
+			Search: true,
+			User:   views.UserData{},
+			Menus:  nil,
+			Script: "/static/js/journal-entry.js",
+		}, nil
+
+	}
 	idInt64, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		return views.PageData{}, fmt.Errorf("invalid user_id in session: %w", err)
@@ -27,6 +38,9 @@ func getBasePageData(c *gin.Context, title, header, page string) (views.PageData
 	}
 
 	menus, err := models.GetUserMenu(db.Conn, page)
+	if err != nil {
+
+	}
 
 	/* 	menus := []views.UserMenu{
 		{MenuDescription: "New", Icon: "fa fa-home", Url: "/journal", UserType: "editor", ItemType: "link", Page: "journal-entry"},
@@ -38,6 +52,7 @@ func getBasePageData(c *gin.Context, title, header, page string) (views.PageData
 	return views.PageData{
 		Title:  title,
 		Header: header,
+		Search: true,
 		User:   user,
 		Menus:  menus,
 		Script: "/static/js/journal-entry.js",

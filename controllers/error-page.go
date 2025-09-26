@@ -14,5 +14,5 @@ func PageNotFound(c *gin.Context) {
 
 	}
 	//var data = views.PageData{Title: "GL/404", Header: ""}
-	utils.Render(c, 200, views.Layout(views.Nav(nil), data, views.View404()))
+	utils.Render(c, 200, views.Layout(views.Nav(nil, false), data, views.View404()))
 }

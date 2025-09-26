@@ -1,7 +1,7 @@
 package views
 import "gl/models"
 
-templ Nav(menus []models.UserMenu) {
+templ Nav(menus []models.UserMenu, search_menu bool) {
 <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;" data-bs-theme="light">
 
     <div class="container-fluid">
@@ -17,13 +17,14 @@ templ Nav(menus []models.UserMenu) {
                     <a class="nav-link active" aria-current="page" href={ item.Url }>{ item.MenuDescription }</a>
                 </li>
                 }
-
             </ul>
+            if search_menu{
             <form class="d-flex mb-0" role="search" id="search-form" name="search-form" action="/search" method="post">
                 <input class="form-control me-2" name="search" id="search" type="search" placeholder="Search"
                     aria-label="Search" />
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
+            }
         </div>
     </div>
 </nav>

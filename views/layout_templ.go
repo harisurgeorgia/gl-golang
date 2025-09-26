@@ -46,7 +46,7 @@ func Layout(nav templ.Component, data PageData, content templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = Nav(data.Menus).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = Nav(data.Menus, data.Search).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

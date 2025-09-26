@@ -52,7 +52,9 @@ func LogoutHandler(c *gin.Context) {
 func GetSession(c *gin.Context, key string) string {
 	sess := sessions.Default(c)
 	value := sess.Get(key)
-
+	if value == nil {
+		return ""
+	}
 	value, ok := value.(string)
 	if !ok {
 		log.Printf("Session value for key '%s' is not a string: %v", key, value)

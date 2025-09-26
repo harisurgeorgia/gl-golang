@@ -10,7 +10,7 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "gl/models"
 
-func Nav(menus []models.UserMenu) templ.Component {
+func Nav(menus []models.UserMenu, search_menu bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -67,7 +67,17 @@ func Nav(menus []models.UserMenu) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</ul><form class=\"d-flex mb-0\" role=\"search\" id=\"search-form\" name=\"search-form\" action=\"/search\" method=\"post\"><input class=\"form-control me-2\" name=\"search\" id=\"search\" type=\"search\" placeholder=\"Search\" aria-label=\"Search\"> <button class=\"btn btn-outline-success\" type=\"submit\">Search</button></form></div></div></nav>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 5, "</ul>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if search_menu {
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<form class=\"d-flex mb-0\" role=\"search\" id=\"search-form\" name=\"search-form\" action=\"/search\" method=\"post\"><input class=\"form-control me-2\" name=\"search\" id=\"search\" type=\"search\" placeholder=\"Search\" aria-label=\"Search\"> <button class=\"btn btn-outline-success\" type=\"submit\">Search</button></form>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 7, "</div></div></nav>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

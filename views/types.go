@@ -7,6 +7,7 @@ type PageData struct {
 	Title  string
 	Header string
 	Role   string
+	Search bool
 	User   UserData
 	Menus  []models.UserMenu
 	Script string
