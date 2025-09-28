@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -31,4 +32,10 @@ func GenerateResetToken() (string, error) {
 
 func NormalizeEmail(email string) string {
 	return strings.TrimSpace(strings.ToLower(email))
+}
+
+func LastDayOfMonth(t time.Time) time.Time {
+	// Move to first day of next month, then subtract 1 day
+	return time.Date(t.Year(), t.Month()+1, 1, 0, 0, 0, 0, t.Location()).
+		AddDate(0, 0, -1)
 }

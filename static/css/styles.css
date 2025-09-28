@@ -1,0 +1,27 @@
+
+	
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    text-align: right;
+}
+
+input[type=number] {
+   
+    /* Firefox */
+    text-align: right;
+}
+
+
+
+.heading {
+    text-align: center;
+    text-transform: uppercase;
+    padding: 5px 20px 5px 20px;
+    border-radius: 5px;
+    border: 4px solid rgb(237, 139, 11);
+    background-color: antiquewhite;
+
+}
+	

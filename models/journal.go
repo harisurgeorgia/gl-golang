@@ -35,10 +35,10 @@ type JournalLine struct {
 	LineNumber  int             `db:"line_number"`
 }
 
-func JournalSave(journal Journal, db *sql.DB) (error, *int64) {
+func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 	tx, err := db.Begin()
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
 
 	// if journal.ID not nil delete journal form journal table
@@ -46,7 +46,7 @@ func JournalSave(journal Journal, db *sql.DB) (error, *int64) {
 		_, err = tx.Exec(`DELETE FROM general_ledger.journals WHERE id = $1`, *journal.ID)
 		if err != nil {
 			tx.Rollback()
-			return err, nil
+			return nil, err
 		}
 	}
 
@@ -56,7 +56,7 @@ func JournalSave(journal Journal, db *sql.DB) (error, *int64) {
 
 	if err != nil {
 		tx.Rollback()
-		return err, nil
+		return nil, err
 	}
 
 	for _, line := range journal.Lines {
@@ -65,14 +65,14 @@ func JournalSave(journal Journal, db *sql.DB) (error, *int64) {
 			`, journal.ID, line.AccountID, line.Debit, line.Credit, line.Description, line.LineNumber)
 		if err != nil {
 			tx.Rollback()
-			return err, nil
+			return nil, sql.ErrConnDone
 		}
 	}
 
 	if err := tx.Commit(); err != nil {
-		return err, nil
+		return nil, err
 	}
-	return nil, journal.ID
+	return journal.ID, nil
 }
 
 // List all journals not posted

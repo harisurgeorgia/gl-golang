@@ -2,7 +2,11 @@ package controllers
 
 import (
 	"gl/models"
+	"gl/utils"
+	"gl/views"
 	"log"
+	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -35,4 +39,45 @@ func lastDayOfMonthDate(month int, year int) time.Time {
 	// Subtract 1 day to get the last day of the given month
 	lastDay := firstOfNextMonth.AddDate(0, 0, -1)
 	return lastDay
+}
+
+func PeriodAddEdit(c *gin.Context) {
+	/* idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Invalid journal ID")
+		return
+	} */
+
+	endDate, err := getCurrentPeriod()
+	if err != nil {
+		log.Fatal("Error finding end_date")
+	}
+	//startData = endDate plus one day
+	startDate := endDate.AddDate(0, 0, 1)
+	periodEnd := utils.LastDayOfMonth(startDate)
+	month := startDate.Month().String()
+	log.Printf("name of month %s", month)
+	log.Printf("New date %s", startDate)
+	log.Printf("Last date of new period %s", periodEnd)
+	periodEndYead := strconv.Itoa(startDate.Year())
+	var newPeriod models.Period
+	newPeriod.PeriodName = month + " - " + periodEndYead
+	newPeriod.StartDate = startDate
+	newPeriod.EndDate = endDate
+	newPeriod.Status = nil
+
+	data, err := getBasePageData(c, "Period", "New Period", "")
+	if err != nil {
+
+	}
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.Period(newPeriod)))
+}
+
+func getCurrentPeriod() (time.Time, error) {
+	p, err := models.GetActivePeriod()
+	if err != nil {
+		log.Fatal("Error capturing date")
+	}
+	return p.EndDate, nil
 }

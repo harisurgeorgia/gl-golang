@@ -1,0 +1,36 @@
+package views
+
+import "gl/models"
+
+templ Period(p models.Period) {
+<div>
+    <div class="d-flex flex-column align-items-center justify-content-center min-vh-100 px-2">
+        <h1 class="mb-4 text-center heading">New Period</h1>
+        <div class="col-md-10">
+            <div class="card shadow p-4">
+                <div class="container">
+                    <form action="/perod" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="period_name" class="form-label">Period Name</label>
+                                <input type="text" class="form-control" id="period_name" name="period_name"
+                                    value={p.PeriodName} />
+                            </div>
+                            <div class="col-md-3">
+                                <label for="start_date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="start_date" name="start_date"
+                                    value={p.StartDate.Format("2006-01-02")} />
+                            </div>
+                            <div class="col-md-3">
+                                <label for="end_date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="end_date" name="end_date"
+                                    value={p.EndDate.Format("2000-01-02")} />
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}

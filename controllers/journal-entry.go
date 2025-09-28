@@ -91,8 +91,9 @@ func JournalSave(c *gin.Context) {
 		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
 		return
 	}
+
 	var id *int64
-	err, id = models.JournalSave(journal, db.Conn)
+	id, err = models.JournalSave(journal, db.Conn)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to save journal entry: %v", err)
 		return

@@ -42,7 +42,7 @@ func Layout(nav templ.Component, data PageData, content templ.Component) templ.C
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css\" rel=\"stylesheet\"><style>\n\t\tinput[type=number]::-webkit-inner-spin-button,\n\t\tinput[type=number]::-webkit-outer-spin-button {\n\t\t\t-webkit-appearance: none;\n\t\t\tmargin: 0;\n\t\t\ttext-align: right;\n\t\t}\n\n\t\tinput[type=number] {\n\t\t\t-moz-appearance: textfield;\n\t\t\t/* Firefox */\n\t\t\ttext-align: right;\n\t\t}\n\n\n\n\t\t.heading {\n\t\t\ttext-align: center;\n\t\t\ttext-transform: uppercase;\n\t\t\tpadding: 5px 20px 5px 20px;\n\t\t\tborder-radius: 5px;\n\t\t\tborder: 4px solid rgb(237, 139, 11);\n\t\t\tbackground-color: antiquewhite;\n\n\t\t}\n\t</style></head><body>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</title><link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css\" rel=\"stylesheet\"><link rel=\"stylesheet\" href=\"/static/css/styles.css\"></head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

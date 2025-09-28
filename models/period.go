@@ -5,6 +5,21 @@ import (
 	"time"
 )
 
+type PeriodStatus string
+
+const (
+	StatusClosed PeriodStatus = "closed"
+	StatusActive PeriodStatus = "active"
+)
+
+type Period struct {
+	Id         *int          `db:"id"`
+	StartDate  time.Time     `db:"start_date"`
+	EndDate    time.Time     `db:"end_date"`
+	Status     *PeriodStatus `db:"status"`
+	PeriodName string        `db:"period_name"`
+}
+
 func ClosePeriod(startDate, endDate time.Time) error {
 	var id int64
 	tx, err := db.Conn.Begin()
@@ -65,4 +80,13 @@ func GetCurrentPeriod() MonthYear {
 		ORDER BY start_date DESC
 		LIMIT 1`).Scan(&month_year.Month, &month_year.Year)
 	return month_year
+}
+
+func GetActivePeriod() (*Period, error) {
+	var p Period
+	err := db.Conn.QueryRow(`select end_date from general_ledger.periods order by id desc limit 1`).Scan(&p.EndDate)
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
 }

@@ -7,32 +7,8 @@ templ Layout(nav templ.Component, data PageData, content templ.Component) {
 <head>
 	<title>{ data.Title }</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-	<style>
-		input[type=number]::-webkit-inner-spin-button,
-		input[type=number]::-webkit-outer-spin-button {
-			-webkit-appearance: none;
-			margin: 0;
-			text-align: right;
-		}
+	<link rel="stylesheet" href="/static/css/styles.css">
 
-		input[type=number] {
-			-moz-appearance: textfield;
-			/* Firefox */
-			text-align: right;
-		}
-
-
-
-		.heading {
-			text-align: center;
-			text-transform: uppercase;
-			padding: 5px 20px 5px 20px;
-			border-radius: 5px;
-			border: 4px solid rgb(237, 139, 11);
-			background-color: antiquewhite;
-
-		}
-	</style>
 </head>
 
 <body>
