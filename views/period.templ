@@ -9,9 +9,9 @@ templ Period(p models.Period) {
         <div class="col-md-10">
             <div class="card shadow p-4">
                 <div class="container">
-                    <form action="/perod" method="post">
+                    <form action="/period" method="post">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <label for="period_name" class="form-label">Period Name</label>
                                 <input type="text" class="form-control" id="period_name" name="period_name"
                                     value={p.PeriodName} />
@@ -24,7 +24,11 @@ templ Period(p models.Period) {
                             <div class="col-md-3">
                                 <label for="end_date" class="form-label">End Date</label>
                                 <input type="date" class="form-control" id="end_date" name="end_date"
-                                    value={p.EndDate.Format("2000-01-02")} />
+                                    value={p.EndDate.Format("2006-01-02")} />
+                            </div>
+                            <div class="col-md-2">
+                                <label for="end_date" class="form-label" style="visibility: hidden;">&npsp;</label>
+                                <button class="form-control btn btn-primary">ADD</button>
                             </div>
                         </div>
                     </form>

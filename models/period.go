@@ -2,6 +2,7 @@ package models
 
 import (
 	"gl/db"
+	"log"
 	"time"
 )
 
@@ -89,4 +90,20 @@ func GetActivePeriod() (*Period, error) {
 		return nil, err
 	}
 	return &p, nil
+}
+
+func SavePeriod(period Period) int64 {
+	var id int64
+	err := db.Conn.QueryRow(
+		`INSERT INTO general_ledger.periods (period_name, start_date, end_date) 
+		 VALUES ($1, $2, $3) RETURNING id`,
+		period.PeriodName,
+		period.StartDate,
+		period.EndDate,
+	).Scan(&id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id
 }

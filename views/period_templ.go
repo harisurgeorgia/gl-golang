@@ -31,7 +31,7 @@ func Period(p models.Period) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div><div class=\"d-flex flex-column align-items-center justify-content-center min-vh-100 px-2\"><h1 class=\"mb-4 text-center heading\">New Period</h1><div class=\"col-md-10\"><div class=\"card shadow p-4\"><div class=\"container\"><form action=\"/perod\" method=\"post\"><div class=\"row\"><div class=\"col-md-6\"><label for=\"period_name\" class=\"form-label\">Period Name</label> <input type=\"text\" class=\"form-control\" id=\"period_name\" name=\"period_name\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div><div class=\"d-flex flex-column align-items-center justify-content-center min-vh-100 px-2\"><h1 class=\"mb-4 text-center heading\">New Period</h1><div class=\"col-md-10\"><div class=\"card shadow p-4\"><div class=\"container\"><form action=\"/period\" method=\"post\"><div class=\"row\"><div class=\"col-md-4\"><label for=\"period_name\" class=\"form-label\">Period Name</label> <input type=\"text\" class=\"form-control\" id=\"period_name\" name=\"period_name\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -62,7 +62,7 @@ func Period(p models.Period) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var4 string
-		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(p.EndDate.Format("2000-01-02"))
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(p.EndDate.Format("2006-01-02"))
 		if templ_7745c5c3_Err != nil {
 			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/period.templ`, Line: 27, Col: 73}
 		}
@@ -70,7 +70,7 @@ func Period(p models.Period) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"></div></div></form></div></div></div></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "\"></div><div class=\"col-md-2\"><label for=\"end_date\" class=\"form-label\" style=\"visibility: hidden;\">&npsp;</label> <button class=\"form-control btn btn-primary\">ADD</button></div></div></form></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

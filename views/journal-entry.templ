@@ -12,7 +12,7 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
   </div>
   <!-- centered heading with background -->
 
-  <form action="/journal/save" method="post">
+  <form action="/journal/save" method="post" id="journal-submit" name="journal-submit">
     <input type="hidden" name="created_by" value={ strconv.FormatInt(journal.CreatedBy, 10) } />
     if journal.ID != nil {
     <input type="hidden" name="id" value={ strconv.FormatInt(*journal.ID, 10) } />
@@ -118,7 +118,7 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
           <button type="button" id="add-line" class="btn btn-primary w-50">Add Line</button>
         </div>
         <div class="col-md-6 d-none" id="save-status">
-          <button type="button" class="btn btn-success w-50">Save</button>
+          <button type="submit" class="btn btn-success w-50">Save</button>
         </div>
       </div>
 

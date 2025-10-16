@@ -103,39 +103,41 @@ document.getElementById("add-line").addEventListener("click", () => {
 });
 
 // Form submission validation
-document.querySelector("form").addEventListener("submit", (event) => {
-  let valid = true;
+document
+  .querySelector("form#journal-submit")
+  .addEventListener("submit", (event) => {
+    let valid = true;
 
-  tbody.querySelectorAll("tr:not(#balance-row)").forEach((row) => {
-    const debit = parseFloat(row.querySelector(".debit")?.value) || 0;
-    const credit = parseFloat(row.querySelector(".credit")?.value) || 0;
-    const account = row.querySelector(".account")?.value;
-    const desc = row.querySelector(".description")?.value;
+    tbody.querySelectorAll("tr:not(#balance-row)").forEach((row) => {
+      const debit = parseFloat(row.querySelector(".debit")?.value) || 0;
+      const credit = parseFloat(row.querySelector(".credit")?.value) || 0;
+      const account = row.querySelector(".account")?.value;
+      const desc = row.querySelector(".description")?.value;
+
+      if (
+        !account ||
+        !desc ||
+        (debit === 0 && credit === 0) ||
+        (debit > 0 && credit > 0)
+      ) {
+        row.classList.add("invalid-row");
+        valid = false;
+      } else {
+        row.classList.remove("invalid-row");
+      }
+    });
 
     if (
-      !account ||
-      !desc ||
-      (debit === 0 && credit === 0) ||
-      (debit > 0 && credit > 0)
+      parseFloat(debitTotalInput.value) !== parseFloat(creditTotalInput.value)
     ) {
-      row.classList.add("invalid-row");
+      balanceRow.classList.add("invalid-row");
       valid = false;
     } else {
-      row.classList.remove("invalid-row");
+      balanceRow.classList.remove("invalid-row");
     }
+
+    if (!valid) event.preventDefault();
   });
-
-  if (
-    parseFloat(debitTotalInput.value) !== parseFloat(creditTotalInput.value)
-  ) {
-    balanceRow.classList.add("invalid-row");
-    valid = false;
-  } else {
-    balanceRow.classList.remove("invalid-row");
-  }
-
-  if (!valid) event.preventDefault();
-});
 
 // Initial calculation on page load
 recalcTotals();

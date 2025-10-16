@@ -47,7 +47,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1></div><!-- centered heading with background --><form action=\"/journal/save\" method=\"post\"><input type=\"hidden\" name=\"created_by\" value=\"")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "</h1></div><!-- centered heading with background --><form action=\"/journal/save\" method=\"post\" id=\"journal-submit\" name=\"journal-submit\"><input type=\"hidden\" name=\"created_by\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -351,7 +351,7 @@ func JournalEntryForm(header, msg string, journal models.Journal, accounts []mod
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</span><div class=\"mb-3 p-3 border\"><div class=\"row text-center\"><div class=\"col-md-6\"><button type=\"button\" id=\"add-line\" class=\"btn btn-primary w-50\">Add Line</button></div><div class=\"col-md-6 d-none\" id=\"save-status\"><button type=\"button\" class=\"btn btn-success w-50\">Save</button></div></div></div></form></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 33, "</span><div class=\"mb-3 p-3 border\"><div class=\"row text-center\"><div class=\"col-md-6\"><button type=\"button\" id=\"add-line\" class=\"btn btn-primary w-50\">Add Line</button></div><div class=\"col-md-6 d-none\" id=\"save-status\"><button type=\"submit\" class=\"btn btn-success w-50\">Save</button></div></div></div></form></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

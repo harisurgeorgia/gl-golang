@@ -27,6 +27,9 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.GET("/logout", controllers.Logout)
 		authGroup.POST("/search", controllers.Search)
 		authGroup.GET("/period", controllers.PeriodAddEdit)
+		authGroup.POST("/period", controllers.PeriodSave)
+		authGroup.GET("verify", controllers.JournalVerify)
+		authGroup.GET("post", controllers.JournalPost)
 	}
 	// Public routes
 	r.GET("/", middleware.RedirectIfAuthenticated(), controllers.Login)

@@ -146,3 +146,11 @@ func JournalEdit(c *gin.Context) {
 
 	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", *journal, accounts)))
 }
+
+func JournalVerify(c *gin.Context) {
+
+}
+
+func JournalPost(c *gin.Context) {
+
+}

@@ -72,7 +72,7 @@ func Nav(menus []models.UserMenu, search_menu bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if search_menu {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<form class=\"d-flex mb-0\" role=\"search\" id=\"search-form\" name=\"search-form\" action=\"/search\" method=\"post\"><input class=\"form-control me-2\" name=\"search\" id=\"search\" type=\"search\" placeholder=\"Search\" aria-label=\"Search\"> <button class=\"btn btn-outline-success\" type=\"submit\">Search</button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 6, "<form class=\"d-flex mb-0\" role=\"search\" id=\"search-form\" id=\"search-form\" name=\"search-form\" action=\"/search\" method=\"post\"><input class=\"form-control me-2\" name=\"search\" id=\"search\" type=\"search\" placeholder=\"Search\" aria-label=\"Search\"> <button class=\"btn btn-outline-success\" type=\"submit\">Search</button></form>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

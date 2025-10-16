@@ -57,14 +57,13 @@ func PeriodAddEdit(c *gin.Context) {
 	startDate := endDate.AddDate(0, 0, 1)
 	periodEnd := utils.LastDayOfMonth(startDate)
 	month := startDate.Month().String()
-	log.Printf("name of month %s", month)
-	log.Printf("New date %s", startDate)
-	log.Printf("Last date of new period %s", periodEnd)
+
+	//log.Printf("Last date of new period %s", periodEnd)
 	periodEndYead := strconv.Itoa(startDate.Year())
 	var newPeriod models.Period
 	newPeriod.PeriodName = month + " - " + periodEndYead
 	newPeriod.StartDate = startDate
-	newPeriod.EndDate = endDate
+	newPeriod.EndDate = periodEnd
 	newPeriod.Status = nil
 
 	data, err := getBasePageData(c, "Period", "New Period", "")
@@ -80,4 +79,23 @@ func getCurrentPeriod() (time.Time, error) {
 		log.Fatal("Error capturing date")
 	}
 	return p.EndDate, nil
+}
+
+func PeriodSave(c *gin.Context) {
+
+	var p models.Period
+	p.PeriodName = c.PostForm("period_name")
+	startDate, err := time.Parse("2006-01-02", c.PostForm("start_date"))
+	if err != nil {
+		log.Fatal("Invaild Date")
+	}
+	p.StartDate = startDate
+	endDate, err := time.Parse("2006-01-02", c.PostForm("end_date"))
+	if err != nil {
+		log.Fatal("Invaild Date")
+	}
+	p.EndDate = endDate
+
+	models.SavePeriod(p)
+
 }
