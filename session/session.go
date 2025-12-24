@@ -55,10 +55,10 @@ func GetSession(c *gin.Context, key string) string {
 	if value == nil {
 		return ""
 	}
-	value, ok := value.(string)
+	str, ok := value.(string)
 	if !ok {
 		log.Printf("Session value for key '%s' is not a string: %v", key, value)
 		c.Redirect(http.StatusBadRequest, "/unexpected-error")
 	}
-	return value.(string)
+	return str
 }

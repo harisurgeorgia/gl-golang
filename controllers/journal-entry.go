@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"gl/db"
+	"gl/messages"
 	"gl/models"
 	"gl/session"
 	"gl/utils"
@@ -27,7 +28,7 @@ func JournalEntry(c *gin.Context) {
 	//data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
 
 	accounts := models.GetAllAccounts(db.Conn)
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.JournalEntryForm(data.Header, "", journal, accounts, false)))
 }
 
 func JournalSave(c *gin.Context) {
@@ -88,7 +89,7 @@ func JournalSave(c *gin.Context) {
 	//data = views.PageData{Title: "GL", Header: "Journal Entry"}
 	accounts := models.GetAllAccounts(db.Conn)
 	if strings.TrimSpace(dabitBalance) != strings.TrimSpace(creditBalance) {
-		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", journal, accounts)))
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", journal, accounts, false)))
 		return
 	}
 
@@ -104,8 +105,9 @@ func JournalSave(c *gin.Context) {
 func JournalList(c *gin.Context) {
 
 	data := views.PageData{Title: "Journal List", Header: "Journal Entries"}
+	filter := c.Param("filter")
 
-	journals, err := models.GetPendingJournals(db.Conn)
+	journals, err := models.GetJournals(db.Conn, filter)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to retrieve journals: %v", err)
 		return
@@ -130,9 +132,8 @@ func JournalEdit(c *gin.Context) {
 	journal, err := models.GetJournalByID(id, db.Conn)
 	if err != nil || journal == nil {
 		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
-			Title:  "Page Not Found",
-			Header: "404 - Page Not Found",
-		}, views.View404()))
+			Title: "Page Not Found",
+		}, views.ErrorPage(messages.Error404)))
 
 		return
 	}
@@ -142,15 +143,55 @@ func JournalEdit(c *gin.Context) {
 		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
 	}
 	journal.CreatedBy = user_id
+	journal.PostedBy = &user_id
+	urole := session.GetSession(c, "user_role")
+
+	role, err := strconv.Atoi(urole)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+		return
+	}
+	PostStatus := false
+	if role == 4 {
+		PostStatus = true
+	}
 	accounts := models.GetAllAccounts(db.Conn)
 
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", *journal, accounts)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", *journal, accounts, PostStatus)))
 }
 
 func JournalVerify(c *gin.Context) {
-
 }
 
 func JournalPost(c *gin.Context) {
+	c.Request.ParseForm()
+	idStr := c.PostForm("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		c.String(http.StatusBadRequest, "Invalid journal ID")
+		return
+	}
+	journal, err := models.GetJournalByID(id, db.Conn)
+	if err != nil || journal == nil {
+		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
+			Title: "Page Not Found",
+		}, views.ErrorPage(messages.Error404)))
 
+		return
+	}
+	uid := session.GetSession(c, "user_id")
+	user_id, err := strconv.ParseInt(uid, 10, 64)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+	}
+	journal.PostedBy = &user_id
+	journal.Status = "Posted"
+	now := time.Now()
+	journal.PostedAt = &now
+	err, _ = models.JournalUpdate(*journal, db.Conn)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to update journal: %v", err)
+		return
+	}
+	c.Redirect(http.StatusFound, "/journal/edit/"+strconv.FormatInt(id, 10))
 }

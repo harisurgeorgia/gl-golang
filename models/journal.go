@@ -14,8 +14,8 @@ type Journal struct {
 	JournalDate   time.Time  `db:"journal_date"`
 	Description   string     `db:"description"` // nullable
 	PeriodID      int64      `db:"period_id"`   // nullable FK
-	Posted        bool       `db:"posted"`
-	PostedBy      *string    `db:"posted_by"` // nullable
+	Status        string     `db:"posted"`
+	PostedBy      *int64     `db:"posted_by"` // nullable
 	PostedAt      *time.Time `db:"posted_at"` // nullable
 	CreatedBy     int64      `db:"created_by"`
 	CreatedAt     time.Time  `db:"created_at"`
@@ -48,11 +48,17 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 			tx.Rollback()
 			return nil, err
 		}
+
+		_, err = tx.Exec(`DELETE FROM general_ledger.journal_lines WHERE journal_id = $1`, *journal.ID)
+		if err != nil {
+			tx.Rollback()
+			return nil, err
+		}
 	}
 
 	err = tx.QueryRow(
-		`insert into general_ledger.journals (journal_date, description, period_id, posted, posted_by, posted_at, created_by) values ($1, $2, $3, $4, $5, $6, $7) RETURNING id
-		`, journal.JournalDate, journal.Description, 1, false, 1, nil, journal.CreatedBy).Scan(&journal.ID)
+		`insert into general_ledger.journals (journal_date, journal_number, description, period_id, status,  created_by) values ($1, $2, $3, $4, $5, $6) RETURNING id
+		`, journal.JournalDate, *journal.JournalNumber, journal.Description, 1, "pending", journal.CreatedBy).Scan(&journal.ID)
 
 	if err != nil {
 		tx.Rollback()
@@ -76,8 +82,8 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 }
 
 // List all journals not posted
-func GetPendingJournals(db *sql.DB) ([]Journal, error) {
-	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, posted, posted_by, posted_at, created_at FROM general_ledger.journals WHERE posted = false`)
+func GetJournals(db *sql.DB, filter string) ([]Journal, error) {
+	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals WHERE status = $1`, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +92,7 @@ func GetPendingJournals(db *sql.DB) ([]Journal, error) {
 	var journals []Journal
 	for rows.Next() {
 		var journal Journal
-		if err := rows.Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Posted, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt); err != nil {
+		if err := rows.Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Status, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt); err != nil {
 			return nil, err
 		}
 
@@ -120,8 +126,8 @@ func GetJournalLines(journalID int64, db *sql.DB) ([]JournalLine, error) {
 // Get a journal by ID
 func GetJournalByID(journalID int64, db *sql.DB) (*Journal, error) {
 	var journal Journal
-	err := db.QueryRow(`SELECT id, journal_number, journal_date, description, period_id, posted, posted_by, posted_at, created_at FROM general_ledger.journals WHERE id = $1`, journalID).
-		Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Posted, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt)
+	err := db.QueryRow(`SELECT id, journal_number, journal_date, description, period_id, status, created_at, created_by FROM general_ledger.journals WHERE id = $1`, journalID).
+		Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Status, &journal.CreatedAt, &journal.CreatedBy)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, nil // No journal found
@@ -139,7 +145,7 @@ func GetJournalByID(journalID int64, db *sql.DB) (*Journal, error) {
 }
 
 func ListAllJournals(db *sql.DB) ([]Journal, error) {
-	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, posted, posted_by, posted_at, created_at FROM general_ledger.journals ORDER BY journal_date DESC`)
+	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals ORDER BY journal_date DESC`)
 	if err != nil {
 		return nil, err
 	}
@@ -148,7 +154,7 @@ func ListAllJournals(db *sql.DB) ([]Journal, error) {
 	var journals []Journal
 	for rows.Next() {
 		var journal Journal
-		if err := rows.Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Posted, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt); err != nil {
+		if err := rows.Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Status, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt); err != nil {
 			return nil, err
 		}
 
@@ -164,4 +170,13 @@ func FindJournalByJournalNumber(s string) (int64, error) {
 	var id int64
 	err := db.Conn.QueryRow("SELECT id FROM general_ledger.journals WHERE journal_number = $1", s).Scan(&id)
 	return id, err
+}
+
+func JournalUpdate(journal Journal, db *sql.DB) (error, *int64) {
+	return nil, nil
+	/* err := db.QueryRow("update general_ledger.journals set posted_at = $1, posted_by = $2, status = $3 where id = $4", journal.PostedAt, journal.PostedBy, "closed", journal.ID)
+	if err != nil {
+		return err, nil
+	}
+	return nil, journal.ID */
 }

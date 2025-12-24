@@ -36,7 +36,7 @@ func LoginSubmit(c *gin.Context) {
 	email := utils.NormalizeEmail(c.PostForm("email"))
 	password := strings.TrimSpace(c.PostForm("password"))
 
-	query := `SELECT id, password,  COALESCE(role, '') AS role, fullname FROM general_ledger.users WHERE email = $1 and is_active = true`
+	query := `SELECT id, password,  COALESCE(role, 1) AS role, fullname FROM general_ledger.users WHERE email = $1 and is_active = true`
 	row := db.Conn.QueryRow(query, email)
 
 	//var id, hash, role, fullname string
@@ -64,7 +64,7 @@ func LoginSubmit(c *gin.Context) {
 	session.SetSession(c, "user_id", idStr)
 	session.SetSession(c, "user_email", user.Email)
 	session.SetSession(c, "user_name", user.Fullname)
-	session.SetSession(c, "user_role", *user.Role) // Assuming role is admin for simplicity
+	session.SetSession(c, "user_role", strconv.Itoa(user.Role)) // Assuming role is admin for simplicity
 
 	c.Redirect(http.StatusFound, "/dashboard")
 }

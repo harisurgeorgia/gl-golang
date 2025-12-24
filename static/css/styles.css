@@ -24,4 +24,13 @@ input[type=number] {
     background-color: antiquewhite;
 
 }
+
+footer p {
+    text-align: center !important;
+}
+
+hr {
+  border: 0;
+  border-top: 10px solid #cfe2ff;; /* Controls thickness via border-width */
+}
 	

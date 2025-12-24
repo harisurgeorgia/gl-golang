@@ -1,0 +1,25 @@
+package controllers
+
+import (
+	"gl/utils"
+	"gl/views"
+
+	"github.com/gin-gonic/gin"
+)
+
+func Menu(header, menus string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		data, _ := getBasePageData(c, header, header, menus)
+		data.Search = false
+
+		utils.Render(
+			c,
+			200,
+			views.Layout(
+				views.Nav(data.Menus, data.Search),
+				data,
+				views.MenuPage(data),
+			),
+		)
+	}
+}
