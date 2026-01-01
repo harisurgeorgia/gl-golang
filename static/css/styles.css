@@ -31,6 +31,6 @@ footer p {
 
 hr {
   border: 0;
-  border-top: 10px solid #cfe2ff;; /* Controls thickness via border-width */
+  border-top: 5px solid #cfe2ff;; /* Controls thickness via border-width */
 }
 	

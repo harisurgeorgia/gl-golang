@@ -12,8 +12,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func getBasePageData(c *gin.Context, title, header, page string) (views.PageData, error) {
+func getBasePageData(c *gin.Context, title, header, page string, script *string) (views.PageData, error) {
 	idStr := session.GetSession(c, "user_id")
+
 	if idStr == "" {
 		return views.PageData{
 			Title:  title,
@@ -21,7 +22,7 @@ func getBasePageData(c *gin.Context, title, header, page string) (views.PageData
 			Search: true,
 			User:   views.UserData{},
 			Menus:  nil,
-			Script: "/static/js/journal-entry.js",
+			Script: script,
 		}, nil
 
 	}
@@ -55,6 +56,6 @@ func getBasePageData(c *gin.Context, title, header, page string) (views.PageData
 		Search: true,
 		User:   user,
 		Menus:  menus,
-		Script: "/static/js/journal-entry.js",
+		Script: script,
 	}, nil
 }

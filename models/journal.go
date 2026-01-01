@@ -172,11 +172,21 @@ func FindJournalByJournalNumber(s string) (int64, error) {
 	return id, err
 }
 
-func JournalUpdate(journal Journal, db *sql.DB) (error, *int64) {
-	return nil, nil
-	/* err := db.QueryRow("update general_ledger.journals set posted_at = $1, posted_by = $2, status = $3 where id = $4", journal.PostedAt, journal.PostedBy, "closed", journal.ID)
+func JournalUpdate(journal Journal, db *sql.DB) (*int64, error) {
+	_, err := db.Exec(
+		`UPDATE general_ledger.journals
+		 SET posted_at = $1,
+		     posted_by = $2,
+		     status    = $3
+		 WHERE id = $4`,
+		journal.PostedAt,
+		journal.PostedBy,
+		"closed",
+		journal.ID,
+	)
 	if err != nil {
-		return err, nil
+		return nil, err
 	}
-	return nil, journal.ID */
+
+	return journal.ID, nil
 }

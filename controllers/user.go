@@ -19,14 +19,14 @@ import (
 var user models.User
 
 func UserCreatePage(c *gin.Context) {
-	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "")
+	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "", nil)
 	if err != nil {
 
 	}
 	utils.Render(c, 200, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, "", user)))
 }
 func UserCreate(c *gin.Context) {
-	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "")
+	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "", nil)
 	if err != nil {
 
 	}
@@ -49,7 +49,7 @@ func UserSave(c *gin.Context) {
 		c.Redirect(http.StatusFound, fmt.Sprintf("/user/%s", c.PostForm("id")))
 		return
 	}
-	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "")
+	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "", nil)
 	var user models.User
 
 	// Automatically fills fields from POST form data
@@ -103,7 +103,7 @@ func UserSave(c *gin.Context) {
 }
 func GetUser(c *gin.Context) {
 
-	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "")
+	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "", nil)
 	if err != nil {
 
 	}

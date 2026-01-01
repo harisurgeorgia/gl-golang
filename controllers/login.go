@@ -21,7 +21,7 @@ import (
 
 func Login(c *gin.Context) {
 
-	data, err := getBasePageData(c, "Login", "Login", "")
+	data, err := getBasePageData(c, "Login", "Login", "", nil)
 	data.Search = false
 	if err != nil {
 		//utils.Render(c, 200, views.Layout(views.Nav(data.Menus, false), data, views.LoginForm("")))

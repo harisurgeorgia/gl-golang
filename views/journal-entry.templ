@@ -6,30 +6,33 @@ import (
 )
 
 templ JournalEntryForm(header, msg string, journal models.Journal, accounts []models.Account, postStatus bool) {
-<div class="container">
+<div class="container" if postStatus { inert }>
   <div class="d-flex justify-content-center">
     <h1 class="m-4 text-primary">{ header }</h1>
   </div>
   <!-- centered heading with background -->
 
   <form action="/journal/save" method="post" id="journal-submit" name="journal-submit">
+
+
     <input type="hidden" name="created_by" value={ strconv.FormatInt(journal.CreatedBy, 10) } />
     if journal.ID != nil {
     <input type="hidden" name="id" value={ strconv.FormatInt(*journal.ID, 10) } />
     }
     <div class="row mb-3">
       <div class="col-md-4">
-        
+
         <input type="date" id="journal-date" name="journal-date" class="form-control" required value={
           journal.JournalDate.Format("2006-01-02") } />
       </div>
       <div class="col-md-4">
-       
+
         if journal.JournalNumber != nil {
         <input type="text" id="journal-number" name="journal-number" readonly class="form-control"
           value={*journal.JournalNumber } />
         }else{
-        <input placeholder="Journal Number" type="text" id="journal-number" name="journal-number" class="form-control" />
+        <input placeholder="Journal Number" type="text" id="journal-number" name="journal-number"
+          class="form-control" />
         }
       </div>
       {}
@@ -38,8 +41,8 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
     <div class="row mb-3 align-items-center">
 
       <div class="col-md-12">
-        <input placeholder="Summary Description" type="text" name="description" id="description" class="form-control" required value={ journal.Description
-          } />
+        <input placeholder="Summary Description" type="text" name="description" id="description" class="form-control"
+          required value={ journal.Description } />
       </div>
     </div>
     <table class="table table-bordered table-primary" id="journal-lines">
@@ -109,32 +112,76 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
       </tbody>
     </table>
     <span class="text-danger">{ msg }</span>
+    if journal.Status != "closed" {
     <div class="mb-3 p-3 border">
 
       <div class="row text-center">
-       if postStatus {
-         <div class="col-md-6" id="post-status">
-          <form action="/journal/post" method="post" id="journal-post" name="journal-post">
-          if journal.ID != nil {
-            <input type="hidden" name="id" value={ strconv.FormatInt(*journal.ID, 10) } />
-          }
-            <button id="post-button" type="button" class="btn btn-success w-50">Post</button>
-          </form>
+        if journal.ID != nil {
+        <div class="col-md-6" id="post-status">
+          <button id="post-button" type="button" class="btn btn-success w-50" data-bs-toggle="modal"
+            data-bs-target="#testModal">Post</button>
         </div>
-        }else{
+        }
         <div class="col-md-6">
           <button type="button" id="add-line" class="btn btn-primary w-50">Add Line</button>
         </div>
-        }
         <div class="col-md-6 d-none" id="save-status">
           <button type="submit" class="btn btn-success w-50">Save</button>
         </div>
-       
       </div>
 
     </div>
-
+    }
   </form>
+
+</div>
+if journal.Status == "closed" {
+<div class="row text-center">
+  <div class="col-md-12">
+    <a href="/journal/list/pending" class="btn btn-primary w-50">Journal List <i
+        class="bi bi-arrow-return-left"></i></a>
+  </div>
+</div>
+}
+<form action="/journal/post" method="post" id="journal-post" name="journal-post">
+  if journal.ID != nil {
+  <input type="hidden" name="id" value={ strconv.FormatInt(*journal.ID, 10) } />
+  }
+</form>
+if !postStatus {
+<button id="post-button" type="button" class="btn btn-success w-50" data-bs-toggle="modal"
+  data-bs-target="#postJournalModal">
+  Post
+</button>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="postJournalModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Posting</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        Are you sure you want to post this journal?
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmPostBtn">
+          Post Journal
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>
 
+<!-- The actual form -->
+<form id="journal-post" action="/journal/post" method="post">
+  <input type="hidden" name="id" value={*journal.ID} />
+</form>
 }

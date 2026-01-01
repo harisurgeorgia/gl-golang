@@ -11,7 +11,7 @@ templ ErrorPage(msg messages.Message){
             <h1 class="display-1 fw-bold text-danger">{ msg.ErrorType }</h1>
             <p class="fs-2 fw-medium mt-4">{ msg.ErrorHeader }</p>
             <p class="mt-4 mb-5">{ msg.ErrorMessage }</p>
-            <a href="/" class="btn btn-danger fw-semibold rounded-pill px-4 py-2 custom-btn">
+            <a href={ msg.Redirect } class="btn btn-danger fw-semibold rounded-pill px-4 py-2 custom-btn">
                 Go Home
             </a>
         </div>

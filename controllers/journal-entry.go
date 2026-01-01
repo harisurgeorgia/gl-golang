@@ -19,7 +19,9 @@ import (
 )
 
 func JournalEntry(c *gin.Context) {
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal")
+	s := "/static/js/journal-entry.js"
+	script := &s
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
 	var journal = models.Journal{JournalDate: time.Now()}
 	if err != nil {
 
@@ -82,7 +84,7 @@ func JournalSave(c *gin.Context) {
 		}
 	}
 
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal")
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", nil)
 	if err != nil {
 
 	}
@@ -118,22 +120,28 @@ func JournalList(c *gin.Context) {
 
 // func view a journal entry
 func JournalEdit(c *gin.Context) {
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal")
+	var script *string
+	s := "/static/js/journal-entry.js"
+	script = &s
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
 	if err != nil {
 
 	}
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		c.String(http.StatusBadRequest, "Invalid journal ID")
+		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
+			Title: "Invalid ID",
+		}, views.ErrorPage(messages.Error400)))
 		return
 	}
 
 	journal, err := models.GetJournalByID(id, db.Conn)
 	if err != nil || journal == nil {
+		messages.Error400.Redirect = "/journal/list/pending"
 		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
-			Title: "Page Not Found",
-		}, views.ErrorPage(messages.Error404)))
+			Title: "Invalid ID",
+		}, views.ErrorPage(messages.Error400)))
 
 		return
 	}
@@ -152,8 +160,9 @@ func JournalEdit(c *gin.Context) {
 		return
 	}
 	PostStatus := false
-	if role == 4 {
+	if role == 4 && journal.Status == "closed" {
 		PostStatus = true
+		data.Script = nil
 	}
 	accounts := models.GetAllAccounts(db.Conn)
 
@@ -183,12 +192,14 @@ func JournalPost(c *gin.Context) {
 	user_id, err := strconv.ParseInt(uid, 10, 64)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+		return
 	}
 	journal.PostedBy = &user_id
 	journal.Status = "Posted"
 	now := time.Now()
 	journal.PostedAt = &now
-	err, _ = models.JournalUpdate(*journal, db.Conn)
+
+	_, err = models.JournalUpdate(*journal, db.Conn)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to update journal: %v", err)
 		return

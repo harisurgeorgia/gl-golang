@@ -10,7 +10,7 @@ import (
 
 func PageNotFound(c *gin.Context) {
 	//var err error
-	var data, err = getBasePageData(c, "GL/404", "", "")
+	var data, err = getBasePageData(c, "GL/404", "", "", nil)
 	if err != nil {
 
 	}

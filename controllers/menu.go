@@ -9,7 +9,7 @@ import (
 
 func Menu(header, menus string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		data, _ := getBasePageData(c, header, header, menus)
+		data, _ := getBasePageData(c, header, header, menus, nil)
 		data.Search = false
 
 		utils.Render(

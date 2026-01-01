@@ -66,7 +66,7 @@ func PeriodAddEdit(c *gin.Context) {
 	newPeriod.EndDate = periodEnd
 	newPeriod.Status = nil
 
-	data, err := getBasePageData(c, "Period", "New Period", "")
+	data, err := getBasePageData(c, "Period", "New Period", "", nil)
 	if err != nil {
 
 	}

@@ -10,7 +10,7 @@ type PageData struct {
 	Search bool
 	User   UserData
 	Menus  []models.UserMenu
-	Script string
+	Script *string
 }
 type UserData struct {
 	Id       int64
