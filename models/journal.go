@@ -56,10 +56,23 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 		}
 	}
 
-	err = tx.QueryRow(
-		`insert into general_ledger.journals (journal_date, journal_number, description, period_id, status,  created_by) values ($1, $2, $3, $4, $5, $6) RETURNING id
-		`, journal.JournalDate, *journal.JournalNumber, journal.Description, 1, "pending", journal.CreatedBy).Scan(&journal.ID)
-
+	if journal.JournalNumber != nil {
+		// use the provided journal_number
+		err = db.QueryRow(`
+        INSERT INTO general_ledger.journals
+        (journal_date, journal_number, description, period_id, status, created_by)
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING id
+    `, journal.JournalDate, *journal.JournalNumber, journal.Description, 1, "pending", journal.CreatedBy).Scan(&journal.ID)
+	} else {
+		// let the trigger generate it
+		err = db.QueryRow(`
+        INSERT INTO general_ledger.journals
+        (journal_date, description, period_id, status, created_by)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id, journal_number
+    `, journal.JournalDate, journal.Description, 1, "pending", journal.CreatedBy).Scan(&journal.ID, &journal.JournalNumber)
+	}
 	if err != nil {
 		tx.Rollback()
 		return nil, err

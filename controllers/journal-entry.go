@@ -71,10 +71,14 @@ func JournalSave(c *gin.Context) {
 	//err, idStr := strconv.ParseInt(c.PostForm("id"), 10, 64)
 
 	journalNumber := strings.TrimSpace(c.PostForm("journal-number"))
+	var journalNumberPtr *string
+	if journalNumber != "" {
+		journalNumberPtr = &journalNumber
+	}
 	description := c.PostForm("description")
 	journal := models.Journal{
 		JournalDate:   journalDate,
-		JournalNumber: &journalNumber,
+		JournalNumber: journalNumberPtr,
 		Description:   description,
 		Lines:         lines,
 	}

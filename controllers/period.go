@@ -49,7 +49,7 @@ func PeriodAddEdit(c *gin.Context) {
 		return
 	} */
 
-	endDate, err := getCurrentPeriod()
+	endDate, err := GetLastPeriodEndDate()
 	if err != nil {
 		log.Fatal("Error finding end_date")
 	}
@@ -73,8 +73,8 @@ func PeriodAddEdit(c *gin.Context) {
 	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.Period(newPeriod)))
 }
 
-func getCurrentPeriod() (time.Time, error) {
-	p, err := models.GetActivePeriod()
+func GetLastPeriodEndDate() (time.Time, error) {
+	p, err := models.GetLastPeriodEndDate()
 	if err != nil {
 		log.Fatal("Error capturing date")
 	}

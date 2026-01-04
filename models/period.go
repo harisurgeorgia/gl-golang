@@ -83,7 +83,7 @@ func GetCurrentPeriod() MonthYear {
 	return month_year
 }
 
-func GetActivePeriod() (*Period, error) {
+func GetLastPeriodEndDate() (*Period, error) {
 	var p Period
 	err := db.Conn.QueryRow(`select end_date from general_ledger.periods order by id desc limit 1`).Scan(&p.EndDate)
 	if err != nil {
