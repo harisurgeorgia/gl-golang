@@ -1,6 +1,8 @@
 package models
 
 import (
+	"database/sql"
+	"errors"
 	"gl/db"
 	"log"
 	"time"
@@ -9,16 +11,17 @@ import (
 type PeriodStatus string
 
 const (
-	StatusClosed PeriodStatus = "closed"
-	StatusActive PeriodStatus = "active"
+	StatusClosed  PeriodStatus = "closed"
+	StatusActive  PeriodStatus = "active"
+	StatusPending PeriodStatus = "pending"
 )
 
 type Period struct {
-	Id         *int          `db:"id"`
-	StartDate  time.Time     `db:"start_date"`
-	EndDate    time.Time     `db:"end_date"`
-	Status     *PeriodStatus `db:"status"`
-	PeriodName string        `db:"period_name"`
+	Id         *int         `db:"id"`
+	StartDate  time.Time    `db:"start_date"`
+	EndDate    time.Time    `db:"end_date"`
+	Status     PeriodStatus `db:"status"`
+	PeriodName string       `db:"period_name"`
 }
 
 func ClosePeriod(startDate, endDate time.Time) error {
@@ -83,27 +86,47 @@ func GetCurrentPeriod() MonthYear {
 	return month_year
 }
 
-func GetLastPeriodEndDate() (*Period, error) {
-	var p Period
-	err := db.Conn.QueryRow(`select end_date from general_ledger.periods order by id desc limit 1`).Scan(&p.EndDate)
+func GetLastPeriodEndDate() (*time.Time, error) {
+	var dt *time.Time
+	err := db.Conn.QueryRow(`select end_date from general_ledger.periods order by id desc limit 1`).Scan(&dt)
 	if err != nil {
-		return nil, err
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, nil // not found
+			}
+			return nil, err
+		}
 	}
-	return &p, nil
+	return dt, nil
 }
 
 func SavePeriod(period Period) int64 {
 	var id int64
 	err := db.Conn.QueryRow(
-		`INSERT INTO general_ledger.periods (period_name, start_date, end_date) 
-		 VALUES ($1, $2, $3) RETURNING id`,
+		`INSERT INTO general_ledger.periods (period_name, start_date, end_date, status) 
+		 VALUES ($1, $2, $3, $4) RETURNING id`,
 		period.PeriodName,
 		period.StartDate,
 		period.EndDate,
+		period.Status,
 	).Scan(&id)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 	return id
+}
+
+func GetPeriod(id int64) (*Period, error) {
+	var period Period
+	err := db.Conn.QueryRow(
+		`SELECT id, period_name, start_date, end_date
+		FROM general_ledger.periods
+		WHERE id = $1`,
+		id,
+	).Scan(&period.Id, &period.PeriodName, &period.StartDate, &period.EndDate)
+	if err != nil {
+		return nil, err
+	}
+	return &period, nil
 }

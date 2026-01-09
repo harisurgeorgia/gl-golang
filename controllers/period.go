@@ -42,16 +42,45 @@ func lastDayOfMonthDate(month int, year int) time.Time {
 }
 
 func PeriodAddEdit(c *gin.Context) {
-	/* idStr := c.Param("id")
-	id, err := strconv.ParseInt(idStr, 10, 64)
-	if err != nil {
-		c.String(http.StatusBadRequest, "Invalid journal ID")
+	idStr := c.Param("id")
+	if idStr != "" {
+		parsedID, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			c.AbortWithStatusJSON(400, gin.H{
+				"error": "invalid id",
+			})
+			return
+		}
+		id := parsedID
+		period, err := models.GetPeriod(id)
+		if err != nil {
+			c.AbortWithStatusJSON(400, gin.H{
+				"error": "invalid id",
+			})
+			return
+		}
+		utils.Render(c, http.StatusOK, views.Period(*period))
 		return
-	} */
+	}
 
 	endDate, err := GetLastPeriodEndDate()
 	if err != nil {
 		log.Fatal("Error finding end_date")
+	}
+	if endDate == nil {
+		t := time.Now().UTC()
+
+		// First day of current month
+		firstOfMonth := time.Date(
+			t.Year(), t.Month(), 1,
+			0, 0, 0, 0,
+			time.UTC,
+		)
+
+		// Last day of previous month
+		lastPrevMonth := firstOfMonth.Add(-time.Nanosecond)
+
+		endDate = &lastPrevMonth
 	}
 	//startData = endDate plus one day
 	startDate := endDate.AddDate(0, 0, 1)
@@ -64,7 +93,7 @@ func PeriodAddEdit(c *gin.Context) {
 	newPeriod.PeriodName = month + " - " + periodEndYead
 	newPeriod.StartDate = startDate
 	newPeriod.EndDate = periodEnd
-	newPeriod.Status = nil
+	newPeriod.Status = models.StatusPending
 
 	data, err := getBasePageData(c, "Period", "New Period", "", nil)
 	if err != nil {
@@ -73,12 +102,12 @@ func PeriodAddEdit(c *gin.Context) {
 	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.Period(newPeriod)))
 }
 
-func GetLastPeriodEndDate() (time.Time, error) {
-	p, err := models.GetLastPeriodEndDate()
+func GetLastPeriodEndDate() (*time.Time, error) {
+	date, err := models.GetLastPeriodEndDate()
 	if err != nil {
 		log.Fatal("Error capturing date")
 	}
-	return p.EndDate, nil
+	return date, nil
 }
 
 func PeriodSave(c *gin.Context) {
@@ -95,6 +124,8 @@ func PeriodSave(c *gin.Context) {
 		log.Fatal("Invaild Date")
 	}
 	p.EndDate = endDate
+
+	p.Status = models.StatusPending
 
 	models.SavePeriod(p)
 
