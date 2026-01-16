@@ -128,6 +128,7 @@ func JournalEdit(c *gin.Context) {
 	s := "/static/js/journal-entry.js"
 	script = &s
 	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
+
 	if err != nil {
 
 	}
@@ -199,7 +200,7 @@ func JournalPost(c *gin.Context) {
 		return
 	}
 	journal.PostedBy = &user_id
-	journal.Status = "Posted"
+	journal.Status = string(models.StatusClosed)
 	now := time.Now()
 	journal.PostedAt = &now
 

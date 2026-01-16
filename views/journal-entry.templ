@@ -6,6 +6,9 @@ import (
 )
 
 templ JournalEntryForm(header, msg string, journal models.Journal, accounts []models.Account, postStatus bool) {
+
+
+
 <div class="container" if postStatus { inert }>
   <div class="d-flex justify-content-center">
     <h1 class="m-4 text-primary">{ header }</h1>
@@ -106,8 +109,10 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
         <tr id="balance-row" class="table-primary">
           <td></td>
           <td class="text-primary" style="padding: 17px;"><strong>Balance</strong></td>
-          <td><input type="number" name="debit-bal" class="form-control" readonly value="0.00" tabindex="-1" /></td>
-          <td><input type="number" name="credit-bal" class="form-control" readonly value="0.00" tabindex="-1" /></td>
+          <td><input type="number" name="debit-bal" class="form-control" readonly value={
+              journal.TtlDebit.StringFixed(2) } tabindex="-1" /></td>
+          <td><input type="number" name="credit-bal" class="form-control" readonly value={
+              journal.TtlCredit.StringFixed(2) } tabindex="-1" /></td>
         </tr>
       </tbody>
     </table>

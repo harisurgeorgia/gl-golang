@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"gl/messages"
 	"gl/models"
 	"gl/utils"
 	"gl/views"
@@ -59,7 +60,11 @@ func PeriodAddEdit(c *gin.Context) {
 			})
 			return
 		}
-		utils.Render(c, http.StatusOK, views.Period(*period))
+		data, err := getBasePageData(c, "Period", "Edit Period", "", nil)
+		if err != nil {
+
+		}
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.Period(*period)))
 		return
 	}
 
@@ -113,6 +118,17 @@ func GetLastPeriodEndDate() (*time.Time, error) {
 func PeriodSave(c *gin.Context) {
 
 	var p models.Period
+	idStr := c.PostForm("id")
+	if idStr != "" {
+		parsedID, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			c.AbortWithStatusJSON(400, gin.H{
+				"error": "invalid id",
+			})
+			return
+		}
+		p.Id = &parsedID
+	}
 	p.PeriodName = c.PostForm("period_name")
 	startDate, err := time.Parse("2006-01-02", c.PostForm("start_date"))
 	if err != nil {
@@ -124,9 +140,41 @@ func PeriodSave(c *gin.Context) {
 		log.Fatal("Invaild Date")
 	}
 	p.EndDate = endDate
+	if p.Id != nil {
+		if c.PostForm("status") == "active" {
+			p.Status = models.StatusActive
+		}
+		if err := models.CheckStatus(p); err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+	} else {
+		p.Status = models.StatusPending
+	}
 
-	p.Status = models.StatusPending
+	i := models.SavePeriod(p)
+	if i == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": "Error saving period",
+		})
+		return
+	}
+	c.Redirect(http.StatusFound, "/period-list")
 
-	models.SavePeriod(p)
+}
 
+func PeriodList(c *gin.Context) {
+	periods, err := models.GetPeriods()
+	if err != nil {
+		log.Fatal("Error capturing date")
+	}
+	data, err := getBasePageData(c, "Period", "Period List", "", nil)
+	if err != nil {
+		utils.Render(c, http.StatusInternalServerError, views.Layout(views.Nav(data.Menus, data.Search), data, views.ErrorPage(messages.Error500)))
+		return
+
+	}
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.PeriodList(periods)))
 }

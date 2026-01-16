@@ -17,12 +17,18 @@ var Error404 = Message{
 var Error403 = Message{
 	ErrorType:    "403",
 	ErrorHeader:  "Access denied",
-	ErrorMessage: "Your are not access to access this page ",
+	ErrorMessage: "Your are not allowed to access this page ",
 }
 
 var Error400 = Message{
 	ErrorType:    "400",
 	ErrorHeader:  "Bad Request",
 	ErrorMessage: "Bad Request page cannot be retrieved",
+	Redirect:     "/",
+}
+var Error500 = Message{
+	ErrorType:    "500",
+	ErrorHeader:  "Internal Server Error",
+	ErrorMessage: "Internal Server Error page cannot be retrieved",
 	Redirect:     "/",
 }

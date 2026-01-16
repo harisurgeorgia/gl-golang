@@ -1,0 +1,46 @@
+package views
+
+import "gl/models"
+import "strconv"
+
+templ PeriodList(periods []models.Period) {
+
+<div class="d-flex w-100 justify-content-center px-5 py-5">
+
+    <div class="card shadow p-4 w-100 mt-5">
+        <div class="card-header">
+            <h5 class="card-title text-center">Period List</h5>
+        </div>
+        <table class="table w-100">
+            <thead>
+                <tr>
+                    <th scope="col">Period Name</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                for _, p := range periods {
+
+                <tr>
+                    <th scope="row">{p.PeriodName}</th>
+                    <td>{p.StartDate.Format("01-02-2006")}</td>
+                    <td>{p.EndDate.Format("01-02-2006")}</td>
+                    <td>
+                        if p.Status == models.StatusClosed {
+                        {"Closed"}
+                        } else if p.Status == models.StatusActive || p.Status == models.StatusPending && p.Id != nil {
+                        <a href={ "/period/" + strconv.FormatInt(int64(*p.Id), 10) }>
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        }
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+}

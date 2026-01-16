@@ -9,19 +9,21 @@ import (
 )
 
 type Journal struct {
-	ID            *int64     `db:"id"`
-	JournalNumber *string    `db:"journal_number"`
-	JournalDate   time.Time  `db:"journal_date"`
-	Description   string     `db:"description"` // nullable
-	PeriodID      int64      `db:"period_id"`   // nullable FK
-	Status        string     `db:"posted"`
-	PostedBy      *int64     `db:"posted_by"` // nullable
-	PostedAt      *time.Time `db:"posted_at"` // nullable
-	CreatedBy     int64      `db:"created_by"`
-	CreatedAt     time.Time  `db:"created_at"`
-	VerifiedAt    *time.Time `db:"verified_at"`
-	VerifiedBy    *string    `db:"verified_by"`
-	Verified      bool       `db:"verified"`
+	ID            *int64          `db:"id"`
+	JournalNumber *string         `db:"journal_number"`
+	JournalDate   time.Time       `db:"journal_date"`
+	Description   string          `db:"description"` // nullable
+	PeriodID      int64           `db:"period_id"`   // nullable FK
+	Status        string          `db:"posted"`
+	PostedBy      *int64          `db:"posted_by"` // nullable
+	PostedAt      *time.Time      `db:"posted_at"` // nullable
+	CreatedBy     int64           `db:"created_by"`
+	CreatedAt     time.Time       `db:"created_at"`
+	VerifiedAt    *time.Time      `db:"verified_at"`
+	VerifiedBy    *string         `db:"verified_by"`
+	Verified      bool            `db:"verified"`
+	TtlDebit      decimal.Decimal `db:"ttl_debit"`
+	TtlCredit     decimal.Decimal `db:"ttl_credit"`
 	Lines         []JournalLine
 }
 
@@ -117,23 +119,28 @@ func GetJournals(db *sql.DB, filter string) ([]Journal, error) {
 	return journals, nil
 }
 
-func GetJournalLines(journalID int64, db *sql.DB) ([]JournalLine, error) {
+func GetJournalLines(journalID int64, db *sql.DB) ([]JournalLine, decimal.Decimal, decimal.Decimal, error) {
 	rows, err := db.Query(`SELECT id, journal_id, account_id, debit, credit, line_description, line_number FROM general_ledger.journal_lines WHERE journal_id = $1`, journalID)
 	if err != nil {
-		return nil, err
+		return nil, decimal.Zero, decimal.Zero, err
 	}
 	defer rows.Close()
 
 	var lines []JournalLine
+
+	totalDebit := decimal.Zero
+	totalCredit := decimal.Zero
 	for rows.Next() {
 		var line JournalLine
 		if err := rows.Scan(&line.ID, &line.JournalID, &line.AccountID, &line.Debit, &line.Credit, &line.Description, &line.LineNumber); err != nil {
-			return nil, err
+			return nil, decimal.Zero, decimal.Zero, err
 		}
+		totalDebit = totalDebit.Add(line.Debit)
+		totalCredit = totalCredit.Add(line.Credit)
 		lines = append(lines, line)
 	}
 
-	return lines, nil
+	return lines, totalDebit, totalCredit, nil
 }
 
 // Get a journal by ID
@@ -148,11 +155,13 @@ func GetJournalByID(journalID int64, db *sql.DB) (*Journal, error) {
 		return nil, err
 	}
 
-	lines, err := GetJournalLines(journalID, db)
+	lines, totalDebit, totalCredit, err := GetJournalLines(journalID, db)
 	if err != nil {
 		return nil, err
 	}
 	journal.Lines = lines
+	journal.TtlDebit = totalDebit
+	journal.TtlCredit = totalCredit
 
 	return &journal, nil
 }
@@ -186,7 +195,11 @@ func FindJournalByJournalNumber(s string) (int64, error) {
 }
 
 func JournalUpdate(journal Journal, db *sql.DB) (*int64, error) {
-	_, err := db.Exec(
+	tx, err := db.Begin()
+	if err != nil {
+		return nil, err
+	}
+	_, err = tx.Exec(
 		`UPDATE general_ledger.journals
 		 SET posted_at = $1,
 		     posted_by = $2,
@@ -194,10 +207,15 @@ func JournalUpdate(journal Journal, db *sql.DB) (*int64, error) {
 		 WHERE id = $4`,
 		journal.PostedAt,
 		journal.PostedBy,
-		"closed",
+		journal.Status,
 		journal.ID,
 	)
 	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
 

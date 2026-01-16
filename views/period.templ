@@ -26,6 +26,15 @@ templ Period(p models.Period) {
                 <input type="date" class="form-control" id="end_date" name="end_date"
                     value={p.EndDate.Format("2006-01-02")} />
             </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    if p.Id != nil && p.Status == "pending" {
+                    <option value="pending" selected>Pending</option>
+                    <option value="active">Active</option>
+                    }
+                </select>
+            </div>
             <button type="submit" class="btn btn-primary w-100">Save</button>
         </form>
     </div>

@@ -30,6 +30,8 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.GET("/close-period", controllers.ClosePeriod)
 		authGroup.GET("/logout", controllers.Logout)
 		authGroup.POST("/search", controllers.Search)
+		authGroup.GET("/period-list", controllers.PeriodList)
+		authGroup.GET("/period/:id", controllers.PeriodAddEdit)
 		authGroup.GET("/period", controllers.PeriodAddEdit)
 		authGroup.POST("/period", controllers.PeriodSave)
 		authGroup.GET("verify", controllers.JournalVerify)

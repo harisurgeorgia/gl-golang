@@ -17,7 +17,7 @@ const (
 )
 
 type Period struct {
-	Id         *int         `db:"id"`
+	Id         *int64       `db:"id"`
 	StartDate  time.Time    `db:"start_date"`
 	EndDate    time.Time    `db:"end_date"`
 	Status     PeriodStatus `db:"status"`
@@ -54,9 +54,10 @@ func ClosePeriod(startDate, endDate time.Time) error {
 		LEFT JOIN general_ledger.account_balances ab 
   		ON a.id = ab.account_id
   		AND ab.period_id = (SELECT id FROM last_period);`,
-		id)
+	)
 	if err != nil {
 		tx.Rollback()
+		return err
 	}
 	if err := tx.Commit(); err != nil {
 		return err
@@ -101,6 +102,9 @@ func GetLastPeriodEndDate() (*time.Time, error) {
 }
 
 func SavePeriod(period Period) int64 {
+	if period.Id != nil {
+		return UpdatePeriod(period)
+	}
 	var id int64
 	err := db.Conn.QueryRow(
 		`INSERT INTO general_ledger.periods (period_name, start_date, end_date, status) 
@@ -117,16 +121,107 @@ func SavePeriod(period Period) int64 {
 	return id
 }
 
+func UpdatePeriod(period Period) int64 {
+	var id int64
+	err := db.Conn.QueryRow(
+		`UPDATE general_ledger.periods SET period_name = $1, start_date = $2, end_date = $3, status = $4 RETURNING id`,
+		period.PeriodName,
+		period.StartDate,
+		period.EndDate,
+		period.Status,
+	).Scan(&id)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	return id
+}
+
 func GetPeriod(id int64) (*Period, error) {
 	var period Period
 	err := db.Conn.QueryRow(
-		`SELECT id, period_name, start_date, end_date
+		`SELECT id, period_name, start_date, end_date, status
 		FROM general_ledger.periods
 		WHERE id = $1`,
 		id,
-	).Scan(&period.Id, &period.PeriodName, &period.StartDate, &period.EndDate)
+	).Scan(&period.Id, &period.PeriodName, &period.StartDate, &period.EndDate, &period.Status)
 	if err != nil {
 		return nil, err
 	}
 	return &period, nil
+}
+
+func GetPeriods() ([]Period, error) {
+	var periods []Period
+	rows, err := db.Conn.Query(`SELECT id, period_name, start_date, end_date, status FROM general_ledger.periods`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var period Period
+		err := rows.Scan(&period.Id, &period.PeriodName, &period.StartDate, &period.EndDate, &period.Status)
+		if err != nil {
+			return nil, err
+		}
+		periods = append(periods, period)
+	}
+	return periods, nil
+}
+
+func CheckStatus(period Period) error {
+	var count int
+	if period.Status == StatusActive {
+
+		err := db.Conn.QueryRow(
+			`SELECT COUNT(*) FROM general_ledger.periods WHERE status = $1 and id < $2`,
+			StatusActive, *period.Id,
+		).Scan(&count)
+
+		if err != nil {
+			return err
+		}
+		tx, err := db.Conn.Begin()
+		if err != nil {
+			return err
+		}
+		if count > 0 {
+			_, err = tx.Exec(`update general_ledger.periods set status = $1 where status = $2 and id < $3`, StatusClosed, StatusActive, *period.Id)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+		_, err = tx.Exec(`update general_ledger.periods set status = $1 where status = $2 and id = $3`, StatusActive, StatusPending, *period.Id)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		_, err = tx.Exec(
+			`WITH last_period AS (
+    SELECT id
+    FROM general_ledger.periods
+    WHERE id < $1
+    ORDER BY id DESC
+    LIMIT 1
+	)INSERT INTO general_ledger.account_balances (period_id, account_id, balance)
+		SELECT $1 AS new_period_id, a.id AS account_id,
+  		COALESCE(ab.balance, 0) AS balance
+		FROM general_ledger.accounts a
+		LEFT JOIN general_ledger.account_balances ab 
+  		ON a.id = ab.account_id
+  		AND ab.period_id = (SELECT id FROM last_period);`,
+			*period.Id)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		if err := tx.Commit(); err != nil {
+			return err
+		}
+
+	}
+
+	return nil
 }
