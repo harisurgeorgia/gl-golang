@@ -110,8 +110,15 @@ func JournalSave(c *gin.Context) {
 
 func JournalList(c *gin.Context) {
 
-	data := views.PageData{Title: "Journal List", Header: "Journal Entries"}
+	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", nil)
+	if err != nil {
+
+	}
+	//data = views.PageData{Title: "GL", Header: "Journal Entry"}
 	filter := c.Param("filter")
+	if filter == "all" {
+		filter = ""
+	}
 
 	journals, err := models.GetJournals(db.Conn, filter)
 	if err != nil {

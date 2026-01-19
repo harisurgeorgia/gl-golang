@@ -98,7 +98,7 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 
 // List all journals not posted
 func GetJournals(db *sql.DB, filter string) ([]Journal, error) {
-	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals WHERE status = $1`, filter)
+	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals WHERE status like $1`, "%"+filter+"%")
 	if err != nil {
 		return nil, err
 	}
