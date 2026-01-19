@@ -3,7 +3,6 @@ package reports
 import (
 	"bytes"
 	"fmt"
-
 	"gl/models"
 
 	"github.com/gin-gonic/gin"
