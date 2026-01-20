@@ -36,6 +36,7 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.POST("/period", controllers.PeriodSave)
 		authGroup.GET("verify", controllers.JournalVerify)
 		authGroup.GET("/trial-balance", controllers.TrialBalance)
+		authGroup.GET("/general-ledger", controllers.GeneralLedger)
 
 	}
 	// Public routes

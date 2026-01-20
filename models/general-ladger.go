@@ -3,28 +3,27 @@ package models
 import (
 	"gl/db"
 	"log"
-
-	"github.com/shopspring/decimal"
 )
 
 type GeneralLedgerRow struct {
 	JournalNumber string
 	Description   string
-	Debit         decimal.Decimal
-	Credit        decimal.Decimal
+	Debit         float64
+	Credit        float64
+	Balance       float64
 }
 
 type ClosingBalance struct {
 	AccountCode string
 	AccountName string
 	Description string
-	Debit       decimal.Decimal
-	Credit      decimal.Decimal
+	Debit       float64
+	Credit      float64
 }
 
 func GetGeneralLedger(period, account_id int) ([]GeneralLedgerRow, *ClosingBalance, error) {
 	var generalLedgerRows []GeneralLedgerRow
-	rows, err := db.Conn.Query(`select je.journal_number, jl.line_description, jl.debit, jl.credit
+	rows, err := db.Conn.Query(`select je.journal_number, jl.line_description, jl.debit, jl.credit, jl.balance
 	from general_ledger.journal_lines jl 
 	left join general_ledger.accounts a on a.id = jl.account_id 
 	left join general_ledger.journals je on je.id = jl.journal_id
@@ -35,7 +34,7 @@ func GetGeneralLedger(period, account_id int) ([]GeneralLedgerRow, *ClosingBalan
 	defer rows.Close()
 	for rows.Next() {
 		var row GeneralLedgerRow
-		err := rows.Scan(&row.JournalNumber, &row.Description, &row.Debit, &row.Credit)
+		err := rows.Scan(&row.JournalNumber, &row.Description, &row.Debit, &row.Credit, &row.Balance)
 		if err != nil {
 			return nil, nil, err
 		}
