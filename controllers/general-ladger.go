@@ -14,7 +14,7 @@ func GeneralLedger(c *gin.Context) {
 		c.HTML(500, "error.templ", nil)
 		return
 	} */
-	rows, closingBalance, err := models.GetGeneralLedger(1, 1)
+	rows, closingBalance, err := models.GetGeneralLedger(1, 5)
 	if err != nil {
 		c.HTML(500, "error.templ", nil)
 		return

@@ -7,6 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jung-kurt/gofpdf"
+	"golang.org/x/text/currency"
+	"golang.org/x/text/language"
 )
 
 func formatMoney(amount float64) string {
@@ -26,8 +28,8 @@ func GenerateTrialBalancePDF(rows []models.TrialBalanceRow, c *gin.Context) erro
 	for _, r := range rows {
 		pdf.CellFormat(30, 7, r.AccountCode, "1", 0, "L", false, 0, "")
 		pdf.CellFormat(70, 7, r.AccountName, "1", 0, "L", false, 0, "")
-		pdf.CellFormat(40, 7, formatMoney(r.Debit), "1", 0, "R", false, 0, "")
-		pdf.CellFormat(40, 7, formatMoney(r.Credit), "1", 1, "R", false, 0, "")
+		pdf.CellFormat(40, 7, FormatCurrency(r.Debit, language.AmericanEnglish, currency.USD), "1", 0, "R", false, 0, "")
+		pdf.CellFormat(40, 7, FormatCurrency(r.Credit, language.AmericanEnglish, currency.USD), "1", 1, "R", false, 0, "")
 
 		totalDebit += r.Debit
 		totalCredit += r.Credit
@@ -42,8 +44,8 @@ func GenerateTrialBalancePDF(rows []models.TrialBalanceRow, c *gin.Context) erro
 	// Totals
 	pdf.SetFont("Helvetica", "B", 10)
 	pdf.CellFormat(100, 7, "Total", "1", 0, "R", true, 0, "")
-	pdf.CellFormat(40, 7, formatMoney(totalDebit), "1", 0, "R", true, 0, "")
-	pdf.CellFormat(40, 7, formatMoney(totalCredit), "1", 1, "R", true, 0, "")
+	pdf.CellFormat(40, 7, FormatCurrency(totalDebit, language.AmericanEnglish, currency.USD), "1", 0, "R", true, 0, "")
+	pdf.CellFormat(40, 7, FormatCurrency(totalCredit, language.AmericanEnglish, currency.USD), "1", 1, "R", true, 0, "")
 
 	var buf bytes.Buffer
 	if err := pdf.Output(&buf); err != nil {
