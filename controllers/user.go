@@ -70,7 +70,7 @@ func UserSave(c *gin.Context) {
 		return
 	}
 
-	err = validation.CheckPasswordMatch(c.PostForm("password"), c.PostForm("confirm-password"))
+	err = validation.CheckPasswordMatch(c.PostForm("password"), c.PostForm("confirmPassword"))
 
 	if err != nil {
 		utils.Render(c, 400, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, "Passwords do not match or are empty.", user)))

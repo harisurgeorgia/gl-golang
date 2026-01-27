@@ -9,8 +9,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"fmt"
 	"gl/models"
+	"strconv"
 )
 
 func UserForm(header string, errorMsg string, user models.User) templ.Component {
@@ -80,9 +80,9 @@ func UserForm(header string, errorMsg string, user models.User) templ.Component 
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var4 string
-			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Printf("%d", user.Id))
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.FormatInt(int64(*user.Id), 10))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/userForm.templ`, Line: 19, Col: 75}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/userForm.templ`, Line: 19, Col: 89}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -119,17 +119,7 @@ func UserForm(header string, errorMsg string, user models.User) templ.Component 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		if user.Id != nil {
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, "<div class=\"mb-3\"><label for=\"password\" class=\"form-label\">Password</label> <input type=\"password\" class=\"form-control\" id=\"password\" name=\"password\"></div><div class=\"mb-3\"><label for=\"confirmPassword\" class=\"form-label\">Confirm Password</label> <input type=\"password\" class=\"form-control\" id=\"confirmPassword\" name=\"confirmPassword\"></div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<button type=\"submit\" class=\"btn btn-primary w-100\">Submit</button></form></div></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "\"></div><div class=\"mb-3\"><label for=\"password\" class=\"form-label\">Password</label> <input type=\"password\" class=\"form-control\" id=\"password\" name=\"password\"></div><div class=\"mb-3\"><label for=\"confirmPassword\" class=\"form-label\">Confirm Password</label> <input type=\"password\" class=\"form-control\" id=\"confirmPassword\" name=\"confirmPassword\"></div><button type=\"submit\" class=\"btn btn-primary w-100\">Submit</button></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

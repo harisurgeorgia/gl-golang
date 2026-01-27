@@ -1,0 +1,131 @@
+package views
+
+import (
+"gl/models"
+"strconv"
+"fmt"
+
+)
+
+templ Product(product *models.Product,
+grouped map[string][]models.SubAccountType,
+units []models.Unit,) {
+
+<div class="container col-12 col-lg-10" style="margin-top: 5rem;">
+    <div class="container">
+        <h1 style="margin-bottom: 2rem;" class="text-center">Product</h1>
+    </div>
+    <div class="card shadow p-4">
+
+
+        <form method="post" action="/inventory/product">
+
+            if product.Id != nil {
+            <input type="hidden" name="id" value={strconv.FormatInt(*product.Id, 10)} />
+            }
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="product_code" class="form-label">Product Code</label>
+                    <input required type="text" class="form-control" id="product_code" name="product_code"
+                        value={product.ProductCode} />
+                </div>
+
+                <div class="col-md-4">
+                    <label for="product_description" class="form-label">Product Description</label>
+                    <input required type="text" class="form-control" id="product_description" name="product_description"
+                        value={product.ProductDescription} />
+                </div>
+                <div class="col-md-4">
+                    <label for="unit" class="form-label">Unit</label>
+                    <select required class="form-select" aria-label="Default select example" name="unit">
+                        <option value="">Select Unit</option>
+                        for _, unit := range units{
+                        if product.Unit != nil && *product.Unit == unit.Id {
+                        <option selected value={(unit.Id)}>
+                            {unit.UnitName}</option>
+                        }else{
+                        <option value={(unit.Id)}>
+                            {unit.UnitName}</option>
+                        }
+                        }
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="inventory_account_id" class="form-label">Inventory</label>
+                    <select required class="form-select" aria-label="Default select example"
+                        name="inventory_account_id">
+                        <option value="">Select Inventory</option>
+                        for _, inventory := range grouped["inventory"]{
+                        if product.InventoryAccountId != nil && *product.InventoryAccountId == inventory.Id {
+                        <option selected value={strconv.FormatInt(inventory.Id, 10)}>
+                            {inventory.AccountCode}{inventory.SubAccountName}</option>
+                        }else{
+                        <option value={strconv.FormatInt(inventory.Id, 10)}>
+                            {inventory.AccountCode}-{inventory.SubAccountName}</option>
+                        }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="sales_account_id" class="form-label">Sales Account</label>
+                    <select id="sales_account_id" required class="form-select" aria-label="Default select example"
+                        name="sales_account_id">
+                        <option disabled value="">Select Sales Account</option>
+                        for _, sales := range grouped["sales"]{
+                        if product.SalesAccountId != nil && *product.SalesAccountId == sales.Id {
+                        <option selected value={strconv.FormatInt(sales.Id, 10)}>
+                            {sales.AccountCode}-{sales.SubAccountName}</option>
+                        }else{
+                        <option value={strconv.FormatInt(sales.Id, 10)}>
+                            {sales.AccountCode}-{sales.SubAccountName}</option>
+                        }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="cogs_account_id" class="form-label">COGS Account</label>
+                    <select required class="form-select" aria-label="Default select example" name="cogs_account_id">
+                        <option value="">Select COGS Account</option>
+                        for _, cogs := range grouped["cogs"]{
+                        if product.COGSAccountId != nil && *product.COGSAccountId == int64(cogs.Id) {
+                        <option selected value={strconv.FormatInt(cogs.Id, 10)}>
+                            {cogs.AccountCode}-{cogs.SubAccountName}</option>
+                        }else{
+                        <option value={strconv.FormatInt(cogs.Id, 10)}>
+                            {cogs.AccountCode}-{cogs.SubAccountName}</option>
+                        }
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                if product.CurrentStock != nil {
+                <div class="col-md-4">
+                    <label for="current_stock" class="form-label">Current Stock</label>
+
+                    <input readonly type="number" class="form-control" id="current_stock" name="current_stock"
+                        value={fmt.Sprintf("%.3f", *product.CurrentStock)} />
+                </div>
+                }
+                if product.Cogs != nil {
+                <div class="col-md-4">
+                    <label for="cogs" class="form-label">COGS</label>
+                    <input required type="number" class="form-control" id="cogs" name="cogs" value={fmt.Sprintf("%.3f",
+                        *product.Cogs)} />
+                </div>
+                }
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary px-4">Save</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+}

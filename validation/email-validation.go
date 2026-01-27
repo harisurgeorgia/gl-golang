@@ -14,7 +14,7 @@ func EmailValid(email string) error {
 		return fmt.Errorf("%q is invalid", email)
 	}
 	var exists string
-	query := `SELECT email FROM general_ledger.users WHERE email = $1`
+	query := `SELECT count(email) count FROM general_ledger.users WHERE email = $1`
 	row := db.Conn.QueryRow(query, email)
 	err = row.Scan(&exists)
 	if err != nil {

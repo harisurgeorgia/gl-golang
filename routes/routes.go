@@ -11,7 +11,8 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine) {
-
+	//r.GET("/user", controllers.UserCreate)
+	//r.POST("/user", controllers.UserSave)
 	// Group with middleware
 	authGroup := r.Group("/")
 	authGroup.Use(middleware.AuthMiddleware())
@@ -22,6 +23,7 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.GET("/dashboard", controllers.Menu("My Dashboard", "dashboard"))
 		authGroup.GET("/user-menu", controllers.Menu("User Menu", "user"))
 		authGroup.GET("/journal-menu", controllers.Menu("Journal Menu", "journal"))
+		authGroup.GET("/product-menu", controllers.Menu("Product Menu", "product"))
 		authGroup.GET("/journal", middleware.RequireRole(3), controllers.JournalEntry)
 		authGroup.GET("/journal/list/:filter", controllers.JournalList)
 		authGroup.GET("/journal/edit/:id", controllers.JournalEdit)
@@ -37,9 +39,14 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.GET("verify", controllers.JournalVerify)
 		authGroup.GET("/trial-balance", controllers.TrialBalance)
 		authGroup.GET("/general-ledger", controllers.GeneralLedger)
+		authGroup.GET("/inventory/product", controllers.Product)
+		authGroup.GET("/inventory/product/:id", controllers.Product)
+		authGroup.POST("/inventory/product", controllers.SaveProduct)
+
+		authGroup.DELETE("/inventory/product/:id", controllers.DeleteProduct)
 
 	}
-	// Public routes
+	// Public routesp
 	r.GET("/", middleware.RedirectIfAuthenticated(), controllers.Login)
 	r.POST("/", controllers.LoginSubmit)
 	// route for page not found

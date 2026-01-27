@@ -1,7 +1,7 @@
 package views
 import (
 "gl/models"
-"fmt"
+"strconv"
 )
 
 templ UserForm(header string, errorMsg string, user models.User) {
@@ -16,7 +16,7 @@ templ UserForm(header string, errorMsg string, user models.User) {
         <form method="post" action="/user">
             if user.Id != nil {
 
-            <input type="hidden" name="id" value={fmt.Printf("%d", user.Id)} />
+            <input type="hidden" name="id" value={ strconv.FormatInt(int64(*user.Id), 10) } />
             }
             <div class="mb-3">
                 <label for="username" class="form-label">Full Name</label>
@@ -26,7 +26,7 @@ templ UserForm(header string, errorMsg string, user models.User) {
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" id="email" name="email" value={user.Email} />
             </div>
-            if user.Id != nil {
+
             <div class="mb-3">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" />
@@ -35,7 +35,7 @@ templ UserForm(header string, errorMsg string, user models.User) {
                 <label for="confirmPassword" class="form-label">Confirm Password</label>
                 <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" />
             </div>
-            }
+
             <button type="submit" class="btn btn-primary w-100">Submit</button>
         </form>
     </div>
