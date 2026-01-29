@@ -1,7 +1,7 @@
 package models
 
 import (
-	"database/sql"
+	"gl/db"
 	"log"
 )
 
@@ -13,9 +13,9 @@ type Account struct {
 	IsActive    *bool  `db:"is_active"`
 }
 
-func GetAllAccounts(db *sql.DB) []Account {
+func GetAllAccounts() []Account {
 	var accounts []Account
-	rows, err := db.Query("SELECT id, account_code, account_name, account_type, is_active FROM general_ledger.accounts")
+	rows, err := db.Conn.Query("SELECT id, account_code, account_name, account_type, is_active FROM general_ledger.accounts")
 	if err != nil {
 		log.Println("Query error:", err)
 		return accounts

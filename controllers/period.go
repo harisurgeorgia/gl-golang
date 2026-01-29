@@ -60,11 +60,12 @@ func PeriodAddEdit(c *gin.Context) {
 			})
 			return
 		}
-		data, err := getBasePageData(c, "Period", "Edit Period", "", nil)
+		data, err := utils.GetBasePageData(c, "Period", "Edit Period", "", nil)
+		data.Link = "/period/search"
 		if err != nil {
 
 		}
-		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.Period(*period)))
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.Period(*period)))
 		return
 	}
 
@@ -100,11 +101,12 @@ func PeriodAddEdit(c *gin.Context) {
 	newPeriod.EndDate = periodEnd
 	newPeriod.Status = models.StatusPending
 
-	data, err := getBasePageData(c, "Period", "New Period", "", nil)
+	data, err := utils.GetBasePageData(c, "Period", "New Period", "", nil)
 	if err != nil {
 
 	}
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.Period(newPeriod)))
+	data.Link = "/period/search"
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.Period(newPeriod)))
 }
 
 func GetLastPeriodEndDate() (*time.Time, error) {
@@ -170,11 +172,12 @@ func PeriodList(c *gin.Context) {
 	if err != nil {
 		log.Fatal("Error capturing date")
 	}
-	data, err := getBasePageData(c, "Period", "Period List", "", nil)
+	data, err := utils.GetBasePageData(c, "Period", "Period List", "", nil)
+	data.Link = "/period/search"
 	if err != nil {
-		utils.Render(c, http.StatusInternalServerError, views.Layout(views.Nav(data.Menus, data.Search), data, views.ErrorPage(messages.Error500)))
+		utils.Render(c, http.StatusInternalServerError, views.Layout(views.Nav(data), data, views.ErrorPage(messages.Error500)))
 		return
 
 	}
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.PeriodList(periods)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.PeriodList(periods)))
 }

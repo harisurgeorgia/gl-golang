@@ -37,8 +37,14 @@ type JournalLine struct {
 	LineNumber  int             `db:"line_number"`
 }
 
-func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
-	tx, err := db.Begin()
+type JournalPageData struct {
+	Detail     Journal
+	Heads      []Account
+	PostStatus bool
+}
+
+func JournalSave(journal Journal) (*int64, error) {
+	tx, err := db.Conn.Begin()
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +66,7 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 
 	if journal.JournalNumber != nil {
 		// use the provided journal_number
-		err = db.QueryRow(`
+		err = db.Conn.QueryRow(`
         INSERT INTO general_ledger.journals
         (journal_date, journal_number, description, period_id, status, created_by)
         VALUES ($1, $2, $3, $4, $5, $6)
@@ -68,7 +74,7 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
     `, journal.JournalDate, *journal.JournalNumber, journal.Description, 1, "pending", journal.CreatedBy).Scan(&journal.ID)
 	} else {
 		// let the trigger generate it
-		err = db.QueryRow(`
+		err = db.Conn.QueryRow(`
         INSERT INTO general_ledger.journals
         (journal_date, description, period_id, status, created_by)
         VALUES ($1, $2, $3, $4, $5)
@@ -77,7 +83,7 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 	}
 	if err != nil {
 		tx.Rollback()
-		return nil, err
+		return nil, sql.ErrTxDone
 	}
 
 	for _, line := range journal.Lines {
@@ -86,7 +92,7 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 			`, journal.ID, line.AccountID, line.Debit, line.Credit, line.Description, line.LineNumber)
 		if err != nil {
 			tx.Rollback()
-			return nil, sql.ErrConnDone
+			return nil, err
 		}
 	}
 
@@ -97,8 +103,8 @@ func JournalSave(journal Journal, db *sql.DB) (*int64, error) {
 }
 
 // List all journals not posted
-func GetJournals(db *sql.DB, filter string) ([]Journal, error) {
-	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals WHERE status like $1`, "%"+filter+"%")
+func GetJournals(filter string) ([]Journal, error) {
+	rows, err := db.Conn.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals WHERE status like $1`, "%"+filter+"%")
 	if err != nil {
 		return nil, err
 	}
@@ -119,8 +125,8 @@ func GetJournals(db *sql.DB, filter string) ([]Journal, error) {
 	return journals, nil
 }
 
-func GetJournalLines(journalID int64, db *sql.DB) ([]JournalLine, decimal.Decimal, decimal.Decimal, error) {
-	rows, err := db.Query(`SELECT id, journal_id, account_id, debit, credit, line_description, line_number FROM general_ledger.journal_lines WHERE journal_id = $1`, journalID)
+func GetJournalLines(journalID int64) ([]JournalLine, decimal.Decimal, decimal.Decimal, error) {
+	rows, err := db.Conn.Query(`SELECT id, journal_id, account_id, debit, credit, line_description, line_number FROM general_ledger.journal_lines WHERE journal_id = $1`, journalID)
 	if err != nil {
 		return nil, decimal.Zero, decimal.Zero, err
 	}
@@ -144,9 +150,9 @@ func GetJournalLines(journalID int64, db *sql.DB) ([]JournalLine, decimal.Decima
 }
 
 // Get a journal by ID
-func GetJournalByID(journalID int64, db *sql.DB) (*Journal, error) {
+func GetJournalByID(journalID int64) (*Journal, error) {
 	var journal Journal
-	err := db.QueryRow(`SELECT id, journal_number, journal_date, description, period_id, status, created_at, created_by FROM general_ledger.journals WHERE id = $1`, journalID).
+	err := db.Conn.QueryRow(`SELECT id, journal_number, journal_date, description, period_id, status, created_at, created_by FROM general_ledger.journals WHERE id = $1`, journalID).
 		Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Status, &journal.CreatedAt, &journal.CreatedBy)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -155,7 +161,7 @@ func GetJournalByID(journalID int64, db *sql.DB) (*Journal, error) {
 		return nil, err
 	}
 
-	lines, totalDebit, totalCredit, err := GetJournalLines(journalID, db)
+	lines, totalDebit, totalCredit, err := GetJournalLines(journalID)
 	if err != nil {
 		return nil, err
 	}
@@ -166,8 +172,8 @@ func GetJournalByID(journalID int64, db *sql.DB) (*Journal, error) {
 	return &journal, nil
 }
 
-func ListAllJournals(db *sql.DB) ([]Journal, error) {
-	rows, err := db.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals ORDER BY journal_date DESC`)
+func ListAllJournals() ([]Journal, error) {
+	rows, err := db.Conn.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals ORDER BY journal_date DESC`)
 	if err != nil {
 		return nil, err
 	}
@@ -194,12 +200,8 @@ func FindJournalByJournalNumber(s string) (int64, error) {
 	return id, err
 }
 
-func JournalUpdate(journal Journal, db *sql.DB) (*int64, error) {
-	tx, err := db.Begin()
-	if err != nil {
-		return nil, err
-	}
-	_, err = tx.Exec(
+func JournalUpdate(journal Journal) (*int64, error) {
+	_, err := db.Conn.Exec(
 		`UPDATE general_ledger.journals
 		 SET posted_at = $1,
 		     posted_by = $2,
@@ -211,11 +213,6 @@ func JournalUpdate(journal Journal, db *sql.DB) (*int64, error) {
 		journal.ID,
 	)
 	if err != nil {
-		tx.Rollback()
-		return nil, err
-	}
-
-	if err = tx.Commit(); err != nil {
 		return nil, err
 	}
 

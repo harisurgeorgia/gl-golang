@@ -17,7 +17,7 @@ var Error404 = Message{
 var Error403 = Message{
 	ErrorType:    "403",
 	ErrorHeader:  "Access denied",
-	ErrorMessage: "Your are not allowed to access this page ",
+	ErrorMessage: "Your are not allowed access to access this page ",
 }
 
 var Error400 = Message{

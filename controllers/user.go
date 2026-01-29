@@ -19,20 +19,23 @@ import (
 var user models.User
 
 func UserCreatePage(c *gin.Context) {
-	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "", nil)
+	var data, err = utils.GetBasePageData(c, "GL/Maintenence", "User Information", "", nil)
 	if err != nil {
 
 	}
-	utils.Render(c, 200, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, "", user)))
+	data.Link = "/user/search"
+	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "", user)))
 }
 func UserCreate(c *gin.Context) {
-	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "", nil)
+	var data, err = utils.GetBasePageData(c, "GL/Maintenence", "User Information", "", nil)
 	if err != nil {
 
 	}
-	utils.Render(c, 200, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, "", user)))
+	data.Link = "/user/search"
+	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "", user)))
 }
 func UserSave(c *gin.Context) {
+
 	email := strings.TrimSpace(strings.ToLower(c.PostForm("email")))
 	if (c.PostForm("id") != "") && (c.PostForm("id") != "0") {
 
@@ -49,31 +52,32 @@ func UserSave(c *gin.Context) {
 		c.Redirect(http.StatusFound, fmt.Sprintf("/user/%s", c.PostForm("id")))
 		return
 	}
-	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "", nil)
+	var data, err = utils.GetBasePageData(c, "GL/Maintenence", "User Information", "", nil)
+	data.Link = "/user/search"
 	var user models.User
 
 	// Automatically fills fields from POST form data
 	if err := c.ShouldBind(&user); err != nil {
-		utils.Render(c, 400, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, "Required fields are missing or invalid.", user)))
+		utils.Render(c, 400, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "Required fields are missing or invalid.", user)))
 		//c.String(http.StatusBadRequest, "Invalid form input: %v", err)
 		return
 	}
 
 	err = validation.EmailValid(email)
 	if err != nil {
-		utils.Render(c, 400, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, err.Error(), user)))
+		utils.Render(c, 400, views.Layout(views.Nav(data), data, views.UserForm(data.Header, err.Error(), user)))
 	}
 
 	err = validation.IsValidPassword(user.Password)
 	if err != nil {
-		utils.Render(c, 400, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, err.Error(), user)))
+		utils.Render(c, 400, views.Layout(views.Nav(data), data, views.UserForm(data.Header, err.Error(), user)))
 		return
 	}
 
 	err = validation.CheckPasswordMatch(c.PostForm("password"), c.PostForm("confirmPassword"))
 
 	if err != nil {
-		utils.Render(c, 400, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, "Passwords do not match or are empty.", user)))
+		utils.Render(c, 400, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "Passwords do not match or are empty.", user)))
 		return
 	}
 
@@ -103,7 +107,7 @@ func UserSave(c *gin.Context) {
 }
 func GetUser(c *gin.Context) {
 
-	var data, err = getBasePageData(c, "GL/Maintenence", "User Information", "", nil)
+	var data, err = utils.GetBasePageData(c, "GL/Maintenence", "User Information", "", nil)
 	if err != nil {
 
 	}
@@ -118,6 +122,6 @@ func GetUser(c *gin.Context) {
 	if errdb != nil {
 		log.Println("No user found with ID:", id)
 	}
-
-	utils.Render(c, 200, views.Layout(views.Nav(nil, true), data, views.UserForm(data.Header, "", user)))
+	data.Link = "/user/search"
+	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "", user)))
 }

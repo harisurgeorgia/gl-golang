@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"gl/db"
-	"gl/messages"
 	"gl/models"
+	"gl/redirect"
 	"gl/session"
 	"gl/utils"
 	"gl/views"
@@ -21,16 +20,23 @@ import (
 func JournalEntry(c *gin.Context) {
 	s := "/static/js/journal-entry.js"
 	script := &s
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
-	var journal = models.Journal{JournalDate: time.Now()}
+	data, err := utils.GetBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
+	data.Link = "/journal/search"
+	journal := models.Journal{JournalDate: time.Now()}
+
 	if err != nil {
 
 	}
 
 	//data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
 
-	accounts := models.GetAllAccounts(db.Conn)
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search), data, views.JournalEntryForm(data.Header, "", journal, accounts, false)))
+	accounts := models.GetAllAccounts()
+	journalPageData := models.JournalPageData{
+		Detail:     journal,
+		Heads:      accounts,
+		PostStatus: false,
+	}
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.JournalEntryForm(journalPageData)))
 }
 
 func JournalSave(c *gin.Context) {
@@ -88,19 +94,24 @@ func JournalSave(c *gin.Context) {
 		}
 	}
 
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", nil)
+	data, err := utils.GetBasePageData(c, "GL Entry", "Journal Entry", "journal", nil)
 	if err != nil {
 
 	}
 	//data = views.PageData{Title: "GL", Header: "Journal Entry"}
-	accounts := models.GetAllAccounts(db.Conn)
+	accounts := models.GetAllAccounts()
+	journalPageData := models.JournalPageData{
+		Detail:     journal,
+		Heads:      accounts,
+		PostStatus: false,
+	}
 	if strings.TrimSpace(dabitBalance) != strings.TrimSpace(creditBalance) {
-		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", journal, accounts, false)))
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.JournalEntryForm(journalPageData)))
 		return
 	}
 
 	var id *int64
-	id, err = models.JournalSave(journal, db.Conn)
+	id, err = models.JournalSave(journal)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to save journal entry: %v", err)
 		return
@@ -110,7 +121,8 @@ func JournalSave(c *gin.Context) {
 
 func JournalList(c *gin.Context) {
 
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", nil)
+	data, err := utils.GetBasePageData(c, "GL Entry", "Journal Entry", "journal", nil)
+	data.Link = "/journal/search"
 	if err != nil {
 
 	}
@@ -120,13 +132,13 @@ func JournalList(c *gin.Context) {
 		filter = ""
 	}
 
-	journals, err := models.GetJournals(db.Conn, filter)
+	journals, err := models.GetJournals(filter)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to retrieve journals: %v", err)
 		return
 	}
 
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalList(journals)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.JournalList(journals)))
 }
 
 // func view a journal entry
@@ -134,7 +146,8 @@ func JournalEdit(c *gin.Context) {
 	var script *string
 	s := "/static/js/journal-entry.js"
 	script = &s
-	data, err := getBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
+	data, err := utils.GetBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
+	data.Link = "/journal/search"
 
 	if err != nil {
 
@@ -144,16 +157,16 @@ func JournalEdit(c *gin.Context) {
 	if err != nil {
 		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
 			Title: "Invalid ID",
-		}, views.ErrorPage(messages.Error400)))
+		}, views.ErrorPage(redirect.Error400)))
 		return
 	}
 
-	journal, err := models.GetJournalByID(id, db.Conn)
+	journal, err := models.GetJournalByID(id)
 	if err != nil || journal == nil {
-		messages.Error400.Redirect = "/journal/list/pending"
+
 		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
 			Title: "Invalid ID",
-		}, views.ErrorPage(messages.Error400)))
+		}, views.ErrorPage(redirect.Error400)))
 
 		return
 	}
@@ -176,9 +189,14 @@ func JournalEdit(c *gin.Context) {
 		PostStatus = true
 		data.Script = nil
 	}
-	accounts := models.GetAllAccounts(db.Conn)
+	accounts := models.GetAllAccounts()
+	journalPageData := models.JournalPageData{
+		Detail:     *journal,
+		Heads:      accounts,
+		PostStatus: PostStatus,
+	}
 
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, true), data, views.JournalEntryForm(data.Header, "", *journal, accounts, PostStatus)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.JournalEntryForm(journalPageData)))
 }
 
 func JournalVerify(c *gin.Context) {
@@ -192,11 +210,11 @@ func JournalPost(c *gin.Context) {
 		c.String(http.StatusBadRequest, "Invalid journal ID")
 		return
 	}
-	journal, err := models.GetJournalByID(id, db.Conn)
+	journal, err := models.GetJournalByID(id)
 	if err != nil || journal == nil {
 		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
 			Title: "Page Not Found",
-		}, views.ErrorPage(messages.Error404)))
+		}, views.ErrorPage(redirect.Error404)))
 
 		return
 	}
@@ -211,7 +229,7 @@ func JournalPost(c *gin.Context) {
 	now := time.Now()
 	journal.PostedAt = &now
 
-	_, err = models.JournalUpdate(*journal, db.Conn)
+	_, err = models.JournalUpdate(*journal)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Failed to update journal: %v", err)
 		return

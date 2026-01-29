@@ -75,7 +75,7 @@ units []models.Unit,) {
                     <label for="sales_account_id" class="form-label">Sales Account</label>
                     <select id="sales_account_id" required class="form-select" aria-label="Default select example"
                         name="sales_account_id">
-                        <option disabled value="">Select Sales Account</option>
+                        <option value="">Select Sales Account</option>
                         for _, sales := range grouped["sales"]{
                         if product.SalesAccountId != nil && *product.SalesAccountId == sales.Id {
                         <option selected value={strconv.FormatInt(sales.Id, 10)}>

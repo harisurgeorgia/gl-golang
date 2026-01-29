@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"gl/db"
 )
 
 type User struct {
@@ -21,13 +22,14 @@ type UserMenu struct {
 	UserType        string
 	ItemType        string
 	Page            string
+	InTopNav        bool
 }
 
-func GetUserMenu(db *sql.DB, page string) ([]UserMenu, error) {
-	query := `SELECT id, menu_description, url, icon, role, item_type, page 
-              FROM general_ledger.user_menu WHERE page = $1 order by ordered asc`
+func GetUserMenu(page string) ([]UserMenu, error) {
+	query := `SELECT id, menu_description, url, icon, role, item_type, page, in_top_nav 
+    FROM general_ledger.user_menu WHERE page = $1 order by ordered asc`
 
-	rows, err := db.Query(query, page)
+	rows, err := db.Conn.Query(query, page)
 	if err != nil {
 		return nil, err
 	}
@@ -46,6 +48,7 @@ func GetUserMenu(db *sql.DB, page string) ([]UserMenu, error) {
 			&um.UserType,
 			&um.ItemType,
 			&um.Page,
+			&um.InTopNav,
 		)
 		if err != nil {
 			return nil, err

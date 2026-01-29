@@ -5,34 +5,34 @@ import (
 "strconv"
 )
 
-templ JournalEntryForm(header, msg string, journal models.Journal, accounts []models.Account, postStatus bool) {
+templ JournalEntryForm(jpd models.JournalPageData) {
 
 
 
-<div class="container" if postStatus { inert }>
+<div class="container" if jpd.PostStatus { inert }>
   <div class="d-flex justify-content-center">
-    <h1 class="m-4 text-primary">{ header }</h1>
+    <h1 class="m-4 text-primary">Journal Entry</h1>
   </div>
   <!-- centered heading with background -->
 
   <form action="/journal/save" method="post" id="journal-submit" name="journal-submit">
 
 
-    <input type="hidden" name="created_by" value={ strconv.FormatInt(journal.CreatedBy, 10) } />
-    if journal.ID != nil {
-    <input type="hidden" name="id" value={ strconv.FormatInt(*journal.ID, 10) } />
+    <input type="hidden" name="created_by" value={ strconv.FormatInt(jpd.Detail.CreatedBy, 10) } />
+    if jpd.Detail.ID != nil {
+    <input type="hidden" name="id" value={ strconv.FormatInt(*jpd.Detail.ID, 10) } />
     }
     <div class="row mb-3">
       <div class="col-md-4">
 
         <input type="date" id="journal-date" name="journal-date" class="form-control" required value={
-          journal.JournalDate.Format("2006-01-02") } />
+          jpd.Detail.JournalDate.Format("2006-01-02") } />
       </div>
       <div class="col-md-4">
 
-        if journal.JournalNumber != nil {
+        if jpd.Detail.JournalNumber != nil {
         <input type="text" id="journal-number" name="journal-number" readonly class="form-control"
-          value={*journal.JournalNumber } />
+          value={*jpd.Detail.JournalNumber } />
         }else{
         <input placeholder="Journal Number" type="text" id="journal-number" name="journal-number"
           class="form-control" />
@@ -45,7 +45,7 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
 
       <div class="col-md-12">
         <input placeholder="Summary Description" type="text" name="description" id="description" class="form-control"
-          required value={ journal.Description } />
+          required value={ jpd.Detail.Description } />
       </div>
     </div>
     <table class="table table-bordered table-primary" id="journal-lines">
@@ -58,12 +58,12 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
         </tr>
       </thead>
       <tbody id="tbody">
-        if len(journal.Lines) == 0 {
+        if len(jpd.Detail.Lines) == 0 {
         <tr>
           <td>
             <select name="accounts_id[]" class="form-select account" aria-label="Default select example">
               <option value="">Select Account</option>
-              for _, account := range accounts {
+              for _, account := range jpd.Heads {
               <option value={ strconv.FormatInt(account.Id, 10) }>{ account.AccountCode } - { account.AccountName }
               </option>
               }
@@ -75,12 +75,12 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
         </tr>
 
         } else {
-        for _, item := range journal.Lines {
+        for _, item := range jpd.Detail.Lines {
         <tr>
           <td>
             <select name="accounts_id[]" class="form-select account" aria-label="Default select example">
               <option value="">Select Account</option>
-              for _, account := range accounts {
+              for _, account := range jpd.Heads {
               if account.Id == item.AccountID {
               <option selected value={ strconv.FormatInt(account.Id, 10) }>{ account.AccountCode } - {
                 account.AccountName }
@@ -110,18 +110,18 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
           <td></td>
           <td class="text-primary" style="padding: 17px;"><strong>Balance</strong></td>
           <td><input type="number" name="debit-bal" class="form-control" readonly value={
-              journal.TtlDebit.StringFixed(2) } tabindex="-1" /></td>
+              jpd.Detail.TtlDebit.StringFixed(2) } tabindex="-1" /></td>
           <td><input type="number" name="credit-bal" class="form-control" readonly value={
-              journal.TtlCredit.StringFixed(2) } tabindex="-1" /></td>
+              jpd.Detail.TtlCredit.StringFixed(2) } tabindex="-1" /></td>
         </tr>
       </tbody>
     </table>
-    <span class="text-danger">{ msg }</span>
-    if journal.Status != "closed" {
+    <span class="text-danger"></span>
+    if jpd.Detail.Status != "closed" {
     <div class="mb-3 p-3 border">
 
       <div class="row text-center">
-        if journal.ID != nil {
+        if jpd.Detail.ID != nil {
         <div class="col-md-6" id="post-status">
           <button id="post-button" type="button" class="btn btn-success w-50" data-bs-toggle="modal"
             data-bs-target="#postJournalModal">
@@ -142,7 +142,7 @@ templ JournalEntryForm(header, msg string, journal models.Journal, accounts []mo
   </form>
 
 </div>
-if journal.Status == "closed" {
+if jpd.Detail.Status == "closed" {
 <div class="row text-center">
   <div class="col-md-12">
     <a href="/journal/list/pending" class="btn btn-primary w-50">Journal List <i
@@ -151,8 +151,8 @@ if journal.Status == "closed" {
 </div>
 }
 <form action="/journal/post" method="post" id="journal-post" name="journal-post">
-  if journal.ID != nil {
-  <input type="hidden" name="id" value={ strconv.FormatInt(*journal.ID, 10) } />
+  if jpd.Detail.ID != nil {
+  <input type="hidden" name="id" value={ strconv.FormatInt(*jpd.Detail.ID, 10) } />
   }
 </form>
 
@@ -183,9 +183,9 @@ if journal.Status == "closed" {
 </div>
 
 <!-- The actual form -->
-if journal.ID != nil {
+if jpd.Detail.ID != nil {
 <form id="journal-post" action="/journal/post" method="post">
-  <input type="hidden" name="id" value={*journal.ID} />
+  <input type="hidden" name="id" value={*jpd.Detail.ID} />
 </form>
 }
 }

@@ -246,7 +246,7 @@ func Product(product *models.Product,
 				}
 			}
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</select></div><div class=\"col-md-4\"><label for=\"sales_account_id\" class=\"form-label\">Sales Account</label> <select id=\"sales_account_id\" required class=\"form-select\" aria-label=\"Default select example\" name=\"sales_account_id\"><option disabled value=\"\">Select Sales Account</option> ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 21, "</select></div><div class=\"col-md-4\"><label for=\"sales_account_id\" class=\"form-label\">Sales Account</label> <select id=\"sales_account_id\" required class=\"form-select\" aria-label=\"Default select example\" name=\"sales_account_id\"><option value=\"\">Select Sales Account</option> ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

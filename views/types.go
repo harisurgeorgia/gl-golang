@@ -11,6 +11,7 @@ type PageData struct {
 	User   UserData
 	Menus  []models.UserMenu
 	Script *string
+	Link   string
 }
 type UserData struct {
 	Id       int64

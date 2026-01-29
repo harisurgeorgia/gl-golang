@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"gl/Inventory"
 	"gl/controllers"
 	"gl/messages"
 	"gl/middleware"
@@ -31,7 +32,7 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.POST("/journal/post", controllers.JournalPost)
 		authGroup.GET("/close-period", controllers.ClosePeriod)
 		authGroup.GET("/logout", controllers.Logout)
-		authGroup.POST("/search", controllers.Search)
+		authGroup.POST("/journal/search", controllers.JournalSearch)
 		authGroup.GET("/period-list", controllers.PeriodList)
 		authGroup.GET("/period/:id", controllers.PeriodAddEdit)
 		authGroup.GET("/period", controllers.PeriodAddEdit)
@@ -39,11 +40,13 @@ func RegisterRoutes(r *gin.Engine) {
 		authGroup.GET("verify", controllers.JournalVerify)
 		authGroup.GET("/trial-balance", controllers.TrialBalance)
 		authGroup.GET("/general-ledger", controllers.GeneralLedger)
-		authGroup.GET("/inventory/product", controllers.Product)
-		authGroup.GET("/inventory/product/:id", controllers.Product)
-		authGroup.POST("/inventory/product", controllers.SaveProduct)
-
-		authGroup.DELETE("/inventory/product/:id", controllers.DeleteProduct)
+		authGroup.GET("/inventory/product", Inventory.Product)
+		authGroup.GET("/inventory/product/:id", Inventory.Product)
+		authGroup.POST("/inventory/product", Inventory.SaveProduct)
+		authGroup.POST("/inventory/product/search", controllers.FindProductByCode)
+		authGroup.GET("/inventory/product/list-products", Inventory.ListAllProducts)
+		authGroup.GET("/inventory/product/list-products/:filter", Inventory.ListAllProducts)
+		authGroup.DELETE("/inventory/product/:id", Inventory.DeleteProduct)
 
 	}
 	// Public routesp

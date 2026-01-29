@@ -87,6 +87,11 @@ func GetProduct(id int64) (*Product, error) {
 }
 
 func SaveProduct(product Product) (*int64, error) {
+	cogs := 0.0
+	currentStock := 0.0
+	product.Cogs = &cogs
+	product.CurrentStock = &currentStock
+
 	if product.Id != nil {
 		return UpdateProduct(product)
 	}
@@ -130,4 +135,43 @@ func UpdateProduct(product Product) (*int64, error) {
 		return nil, err
 	}
 	return &id, nil
+}
+
+func ListAllProducts(productCode string) ([]Product, error) {
+	products := []Product{}
+	rows, err := db.Conn.Query(`SELECT id, product_code, product_description, inventory_account_id, 
+	sales_account_id, cogs_account_id, unit, cogs, current_stock FROM general_ledger.products_cogs
+	where product_code like $1 ORDER BY product_code ASC`, "%"+productCode+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var product Product
+		if err := rows.Scan(&product.Id, &product.ProductCode, &product.ProductDescription, &product.InventoryAccountId,
+			&product.SalesAccountId, &product.COGSAccountId, &product.Unit, &product.Cogs, &product.CurrentStock); err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+	return products, nil
+}
+
+func FindProductByCode(productCode string) ([]Product, error) {
+	var products []Product
+	rows, err := db.Conn.Query(`SELECT id, product_code, product_description, inventory_account_id, sales_account_id, cogs_account_id, unit, cogs, current_stock FROM general_ledger.products_cogs WHERE product_code like $1`, "%"+productCode+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var p Product
+		if err := rows.Scan(&p.Id, &p.ProductCode, &p.ProductDescription, &p.InventoryAccountId,
+			&p.SalesAccountId, &p.COGSAccountId, &p.Unit, &p.Cogs, &p.CurrentStock); err != nil {
+			return nil, err
+		}
+		products = append(products, p)
+	}
+	return products, nil
 }

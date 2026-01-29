@@ -1,6 +1,7 @@
 package Inventory
 
 import (
+	"gl/models"
 	"gl/utils"
 	"gl/views"
 
@@ -10,14 +11,15 @@ import (
 func ProductPurchase(c *gin.Context) {
 	data, _ := utils.GetBasePageData(c, "Product Purchase", "Product Purchase", "product-purchase", nil)
 	data.Search = false
+	invoice := models.Invoice{}
 
 	utils.Render(
 		c,
 		200,
 		views.Layout(
-			views.Nav(data.Menus, data.Search, &data.Link),
+			views.Nav(data),
 			data,
-			views.ProductForm(data),
+			views.ProductForm(invoice),
 		),
 	)
 }

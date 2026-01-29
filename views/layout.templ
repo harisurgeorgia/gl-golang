@@ -4,7 +4,6 @@ package views
 templ Layout(nav templ.Component, data PageData, content templ.Component) {
 <html>
 
-
 <head>
 	<title>{ data.Title }</title>
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -17,7 +16,10 @@ templ Layout(nav templ.Component, data PageData, content templ.Component) {
 </head>
 
 <body>
-	@Nav(data.Menus, data.Search)
+	if nav != nil {
+	@nav
+	}
+
 	<main>
 		@content
 	</main>

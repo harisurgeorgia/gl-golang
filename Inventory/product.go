@@ -1,4 +1,4 @@
-package controllers
+package Inventory
 
 import (
 	"gl/messages"
@@ -18,7 +18,7 @@ func Product(c *gin.Context) {
 	product := &models.Product{}
 	idStr := c.Param("id")
 	trimmed := strings.TrimSpace(idStr)
-	data, err := getBasePageData(c, "Product", "Product Edit/Entry", "product", nil)
+	data, err := utils.GetBasePageData(c, "Product", "Product Edit/Entry", "product", nil)
 	data.Link = "/inventory/product/search"
 	if err != nil {
 		utils.Render(c, 500, views.Layout(nil, views.PageData{
@@ -36,7 +36,7 @@ func Product(c *gin.Context) {
 	}
 
 	if len(trimmed) == 0 {
-		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data.Menus, data.Search, &data.Link), data, views.Product(product, grouped, models.Units)))
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.Product(product, grouped, models.Units)))
 		return
 	}
 
@@ -56,7 +56,7 @@ func Product(c *gin.Context) {
 		}, views.ErrorPage(messages.Error500)))
 		return
 	}
-	utils.Render(c, 200, views.Layout(views.Nav(data.Menus, data.Search, &data.Link), data, views.Product(p, grouped, models.Units)))
+	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.Product(p, grouped, models.Units)))
 }
 
 func SaveProduct(c *gin.Context) {
@@ -92,7 +92,7 @@ func DeleteProduct(c *gin.Context) {
 }
 
 func ListAllProducts(c *gin.Context) {
-	data, err := getBasePageData(c, "Product", "Product Edit/Entry", "", nil)
+	data, err := utils.GetBasePageData(c, "Product", "Product Edit/Entry", "", nil)
 	data.Link = "/inventory/product/search"
 	if err != nil {
 		utils.Render(c, 500, views.Layout(nil, views.PageData{
@@ -111,6 +111,6 @@ func ListAllProducts(c *gin.Context) {
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
-	utils.Render(c, 200, views.Layout(views.Nav(data.Menus, data.Search, &data.Link), data, views.ProductList(product)))
+	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.ProductList(product)))
 
 }
