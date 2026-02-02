@@ -21,16 +21,16 @@ func GeneralLedger(c *gin.Context) {
 	} */
 	rows, closingBalance, err := models.GetGeneralLedger(1, 5)
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
 
-	reports.GenerateGeneralLedgerPDF(rows, closingBalance, c)
+	err = reports.GenerateGeneralLedgerPDF(rows, closingBalance, c)
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}

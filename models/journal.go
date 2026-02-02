@@ -194,10 +194,21 @@ func ListAllJournals() ([]Journal, error) {
 	return journals, nil
 }
 
-func FindJournalByJournalNumber(s string) (int64, error) {
-	var id int64
-	err := db.Conn.QueryRow("SELECT id FROM general_ledger.journals WHERE journal_number = $1", s).Scan(&id)
-	return id, err
+func FindJournalByJournalNumber(s string) ([]Journal, error) {
+	var journals []Journal
+	rows, err := db.Conn.Query(`SELECT id, journal_number, journal_date, description, period_id, status, posted_by, posted_at, created_at FROM general_ledger.journals WHERE journal_number like $1`, "%"+s+"%")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var journal Journal
+		if err := rows.Scan(&journal.ID, &journal.JournalNumber, &journal.JournalDate, &journal.Description, &journal.PeriodID, &journal.Status, &journal.PostedBy, &journal.PostedAt, &journal.CreatedAt); err != nil {
+			return nil, err
+		}
+		journals = append(journals, journal)
+	}
+	return journals, err
 }
 
 func JournalUpdate(journal Journal) (*int64, error) {

@@ -14,16 +14,16 @@ func TrialBalance(c *gin.Context) {
 	p := 1
 	rows, err := models.GetTrialBalance(p)
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
 
 	reports.GenerateTrialBalancePDF(rows, c)
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}

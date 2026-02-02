@@ -46,8 +46,8 @@ func RequireRole(minRole int) gin.HandlerFunc {
 
 		// Hierarchical check
 		if userType < minRole {
-			utils.Render(c, 403, views.Layout(nil, views.PageData{
-				Title: "Unauthorized",
+			utils.Render(c, 403, views.Layout(nil, views.LayoutAttribute{
+				PageTitle: "Unauthorized",
 			}, views.ErrorPage(messages.Error403)))
 			return
 		}

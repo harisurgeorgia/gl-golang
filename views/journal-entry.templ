@@ -5,10 +5,7 @@ import (
 "strconv"
 )
 
-templ JournalEntryForm(jpd models.JournalPageData) {
-
-
-
+templ JournalEntryForm(jpd models.JournalPageData, csrfToken string) {
 <div class="container" if jpd.PostStatus { inert }>
   <div class="d-flex justify-content-center">
     <h1 class="m-4 text-primary">Journal Entry</h1>
@@ -16,8 +13,9 @@ templ JournalEntryForm(jpd models.JournalPageData) {
   <!-- centered heading with background -->
 
   <form action="/journal/save" method="post" id="journal-submit" name="journal-submit">
+    <input type="hidden" name="_csrf" value={ csrfToken }>
 
-
+    <!-- Generated CSRF token -->
     <input type="hidden" name="created_by" value={ strconv.FormatInt(jpd.Detail.CreatedBy, 10) } />
     if jpd.Detail.ID != nil {
     <input type="hidden" name="id" value={ strconv.FormatInt(*jpd.Detail.ID, 10) } />
@@ -150,7 +148,7 @@ if jpd.Detail.Status == "closed" {
   </div>
 </div>
 }
-<form action="/journal/post" method="post" id="journal-post" name="journal-post">
+<form action="/journal/post" method="post" id="journal-" name="journal-post">
   if jpd.Detail.ID != nil {
   <input type="hidden" name="id" value={ strconv.FormatInt(*jpd.Detail.ID, 10) } />
   }

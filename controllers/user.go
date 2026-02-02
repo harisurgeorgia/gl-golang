@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gl/db"
 	"gl/models"
+	"gl/redirect"
 	"gl/utils"
 	"gl/validation"
 	"gl/views"
@@ -19,20 +20,33 @@ import (
 var user models.User
 
 func UserCreatePage(c *gin.Context) {
-	var data, err = utils.GetBasePageData(c, "GL/Maintenence", "User Information", "", nil)
-	if err != nil {
 
+	link := "/user/search"
+	menus, _ := models.GetUserMenu("dashboard")
+	navData := views.NavData{
+		Link:   &link,
+		Menus:  menus,
+		Search: true,
 	}
-	data.Link = "/user/search"
-	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "", user)))
+	utils.Render(c, 200, views.Layout(views.Nav(navData), views.LayoutAttribute{
+		PageTitle: "User Information",
+		Script:    nil,
+	}, views.UserForm(user)))
 }
 func UserCreate(c *gin.Context) {
-	var data, err = utils.GetBasePageData(c, "GL/Maintenence", "User Information", "", nil)
-	if err != nil {
 
+	link := "/user/search"
+	menus, _ := models.GetUserMenu("dashboard")
+	navData := views.NavData{
+		Link:   &link,
+		Menus:  menus,
+		Search: true,
 	}
-	data.Link = "/user/search"
-	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "", user)))
+
+	utils.Render(c, 200, views.Layout(views.Nav(navData), views.LayoutAttribute{
+		PageTitle: "User Information",
+		Script:    nil,
+	}, views.UserForm(user)))
 }
 func UserSave(c *gin.Context) {
 
@@ -52,32 +66,49 @@ func UserSave(c *gin.Context) {
 		c.Redirect(http.StatusFound, fmt.Sprintf("/user/%s", c.PostForm("id")))
 		return
 	}
-	var data, err = utils.GetBasePageData(c, "GL/Maintenence", "User Information", "", nil)
-	data.Link = "/user/search"
+	menus, _ := models.GetUserMenu("dashboard")
+	link := "/user/search"
+	navData := views.NavData{
+		Link:   &link,
+		Menus:  menus,
+		Search: true,
+	}
 	var user models.User
 
 	// Automatically fills fields from POST form data
 	if err := c.ShouldBind(&user); err != nil {
-		utils.Render(c, 400, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "Required fields are missing or invalid.", user)))
+		utils.Render(c, 400, views.Layout(views.Nav(navData), views.LayoutAttribute{
+			PageTitle: "User Information",
+			Script:    nil,
+		}, views.UserForm(user)))
 		//c.String(http.StatusBadRequest, "Invalid form input: %v", err)
 		return
 	}
 
-	err = validation.EmailValid(email)
+	err := validation.EmailValid(email)
 	if err != nil {
-		utils.Render(c, 400, views.Layout(views.Nav(data), data, views.UserForm(data.Header, err.Error(), user)))
+		utils.Render(c, 400, views.Layout(views.Nav(navData), views.LayoutAttribute{
+			PageTitle: "User Information",
+			Script:    nil,
+		}, views.UserForm(user)))
 	}
 
 	err = validation.IsValidPassword(user.Password)
 	if err != nil {
-		utils.Render(c, 400, views.Layout(views.Nav(data), data, views.UserForm(data.Header, err.Error(), user)))
+		utils.Render(c, 400, views.Layout(views.Nav(navData), views.LayoutAttribute{
+			PageTitle: "User Information",
+			Script:    nil,
+		}, views.UserForm(user)))
 		return
 	}
 
 	err = validation.CheckPasswordMatch(c.PostForm("password"), c.PostForm("confirmPassword"))
 
 	if err != nil {
-		utils.Render(c, 400, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "Passwords do not match or are empty.", user)))
+		utils.Render(c, 400, views.Layout(views.Nav(navData), views.LayoutAttribute{
+			PageTitle: "User Information",
+			Script:    nil,
+		}, views.UserForm(user)))
 		return
 	}
 
@@ -97,7 +128,10 @@ func UserSave(c *gin.Context) {
 
 	if err != nil {
 		log.Println("DB insert error:", err)
-		utils.Render(c, 500, views.UserForm("Registration", "Could not save user", user))
+		utils.Render(c, 500, views.Layout(views.Nav(navData), views.LayoutAttribute{
+			PageTitle: "User Information",
+			Script:    nil,
+		}, views.UserForm(user)))
 		return
 	}
 	log.Println("User created with ID:", user.Id)
@@ -107,10 +141,6 @@ func UserSave(c *gin.Context) {
 }
 func GetUser(c *gin.Context) {
 
-	var data, err = utils.GetBasePageData(c, "GL/Maintenence", "User Information", "", nil)
-	if err != nil {
-
-	}
 	id := c.Param("id")
 	query := `SELECT id, email, fullname FROM general_ledger.users WHERE id = $1`
 	errdb := db.Conn.QueryRow(query, id).Scan(
@@ -122,6 +152,20 @@ func GetUser(c *gin.Context) {
 	if errdb != nil {
 		log.Println("No user found with ID:", id)
 	}
-	data.Link = "/user/search"
-	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.UserForm(data.Header, "", user)))
+	menus, err := models.GetUserMenu("dashboard")
+	if err != nil {
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
+		}, views.ErrorPage(redirect.Error500)))
+		return
+	}
+	link := "/user/search"
+	navData := views.NavData{
+		Link:  &link,
+		Menus: menus,
+	}
+	utils.Render(c, 200, views.Layout(views.Nav(navData), views.LayoutAttribute{
+		PageTitle: "User Information",
+		Script:    nil,
+	}, views.UserForm(user)))
 }

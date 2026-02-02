@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"gl/db"
 )
 
@@ -31,6 +32,7 @@ func GetUserMenu(page string) ([]UserMenu, error) {
 
 	rows, err := db.Conn.Query(query, page)
 	if err != nil {
+		fmt.Println(err)
 		return nil, err
 	}
 	defer rows.Close()

@@ -1,7 +1,6 @@
 package views
 
-
-templ Nav(data PageData) {
+templ Nav(nav NavData) {
 <nav class="navbar navbar-expand-lg" style="background-color: #e3f2fd;" data-bs-theme="light">
 
     <div class="container-fluid">
@@ -11,8 +10,10 @@ templ Nav(data PageData) {
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            if nav.IsTopNav {
+
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                for _, item := range data.Menus {
+                for _, item := range nav.Menus {
                 if item.InTopNav {
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href={ item.Url }>{ item.MenuDescription }</a>
@@ -20,13 +21,9 @@ templ Nav(data PageData) {
                 }
                 }
             </ul>
-            if data.Search {
-            <form class="d-flex mb-0" role="search" id="search-form" id="search-form" name="search-form" action={
-                data.Link } method="post">
-                <input required class="form-control me-2" name="search" id="search" type="search" placeholder="Search"
-                    aria-label="Search" />
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+            }
+            if nav.Search != false {
+            @Search(nav)
             }
         </div>
     </div>

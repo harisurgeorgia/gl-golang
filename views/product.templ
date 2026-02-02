@@ -9,15 +9,13 @@ import (
 
 templ Product(product *models.Product,
 grouped map[string][]models.SubAccountType,
-units []models.Unit,) {
+units []models.Unit, token string) {
 
 <div class="container col-12 col-lg-10" style="margin-top: 5rem;">
     <div class="container">
         <h1 style="margin-bottom: 2rem;" class="text-center">Product</h1>
     </div>
     <div class="card shadow p-4">
-
-
         <form method="post" action="/inventory/product">
 
             if product.Id != nil {

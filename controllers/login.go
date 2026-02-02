@@ -21,17 +21,18 @@ import (
 
 func Login(c *gin.Context) {
 
-	data, err := utils.GetBasePageData(c, "Login", "Login", "", nil)
-	data.Search = false
-	if err != nil {
-		//utils.Render(c, 200, views.Layout(views.Nav(data.Menus, false), data, views.LoginForm("")))
+	attr := views.LayoutAttribute{
+		PageTitle: "GL/Login",
+		Script:    nil,
 	}
-	utils.Render(c, 200, views.Layout(nil, data, views.LoginForm(data.Header, "")))
+	utils.Render(c, 200, views.Layout(nil, attr, views.LoginForm("")))
 }
 
 func LoginSubmit(c *gin.Context) {
-
-	var data = getLoginPageData()
+	attr := views.LayoutAttribute{
+		PageTitle: "GL/Login",
+		Script:    nil,
+	}
 	// 1. Capture form input
 	email := utils.NormalizeEmail(c.PostForm("email"))
 	password := strings.TrimSpace(c.PostForm("password"))
@@ -46,17 +47,17 @@ func LoginSubmit(c *gin.Context) {
 	if err != nil {
 		log.Println("Error querying user:", err)
 		utils.Render(c, http.StatusUnauthorized, views.Layout(nil,
-			data,
-			views.LoginForm(data.Header, "Invalid credentials."),
+			attr,
+			views.LoginForm("Invalid credentials."),
 		))
 		return
 	}
 	if !utils.CheckPasswordHash(password, user.Password) {
 
 		log.Println("Invalid password for user:", email)
-		utils.Render(c, http.StatusUnauthorized, views.Layout(views.Nav(data),
-			data,
-			views.LoginForm(data.Header, "Invalid credentials."),
+		utils.Render(c, http.StatusUnauthorized, views.Layout(nil,
+			attr,
+			views.LoginForm("Invalid credentials."),
 		))
 		return
 	}
@@ -69,18 +70,18 @@ func LoginSubmit(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/dashboard")
 }
 
-func getLoginPageData() views.PageData {
-	return views.PageData{Title: "GL/Login", Header: "Login Page"}
-}
-
 func ForgotPassword(c *gin.Context) {
 	var email string
 	if c.Request.Method == http.MethodPost {
 		email = utils.NormalizeEmail(c.PostForm("email"))
 		err := validation.EmailValid(email)
 		if err != nil {
-			data := views.PageData{Title: "GL/Forgot Password", Header: "Reset Password"}
-			utils.Render(c, 200, views.Layout(views.Nav(data), data, views.ResetFrom(data.Header, err.Error(), email)))
+			utils.Render(c, 200, views.Layout(nil,
+				views.LayoutAttribute{
+					PageTitle: "GL/Forgot Password",
+					Script:    nil,
+				},
+				views.ResetFrom("Reset Password", err.Error(), email)))
 			return
 		} else {
 			token, err := utils.GenerateResetToken()
@@ -106,36 +107,59 @@ func ForgotPassword(c *gin.Context) {
 			return
 		}
 	} else {
-		data := views.PageData{Title: "GL/Forgot Password", Header: "Reset Password"}
-		utils.Render(c, 200, views.Layout(nil, data, views.ResetFrom(data.Header, "", "")))
+		utils.Render(c, 200, views.Layout(nil,
+			views.LayoutAttribute{
+				PageTitle: "GL/Forgot Password",
+				Script:    nil,
+			},
+			views.ResetFrom("Reset Password", "", "")))
 	}
 
 }
 
 func ChangePassword(c *gin.Context) {
-	data := views.PageData{Title: "GL/Reset Password", Header: "Reset Password"}
 	if c.Request.Method == http.MethodGet {
 		token := strings.TrimSpace(strings.TrimPrefix(c.Param("key"), "/"))
-		utils.Render(c, 200, views.Layout(nil, data, views.ChangePasswordForm(data.Header, "", "", token, "", "")))
+		utils.Render(c, 200, views.Layout(nil,
+			views.LayoutAttribute{
+				PageTitle: "GL/Reset Password",
+				Script:    nil,
+			},
+			views.ChangePasswordForm("Reset Password", "", "", token, "", "")))
 		return
 	}
 	email := utils.NormalizeEmail(c.PostForm("email"))
 	err := validation.EmailValid(email)
 
 	if err != nil {
-		utils.Render(c, http.StatusSeeOther, views.Layout(nil, data, views.ChangePasswordForm(data.Header, err.Error(), email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
+		utils.Render(c, http.StatusSeeOther, views.Layout(nil,
+			views.LayoutAttribute{
+				PageTitle: "GL/Reset Password",
+				Script:    nil,
+			},
+			views.ChangePasswordForm("Reset Password", err.Error(), email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
 	}
 
 	err = validation.CheckPasswordMatch(c.PostForm("password"), c.PostForm("confirm-password"))
 
 	if err != nil {
-		utils.Render(c, http.StatusSeeOther, views.Layout(nil, data, views.ChangePasswordForm(data.Header, err.Error(), email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
+		utils.Render(c, http.StatusSeeOther, views.Layout(nil,
+			views.LayoutAttribute{
+				PageTitle: "GL/Reset Password",
+				Script:    nil,
+			},
+			views.ChangePasswordForm("Reset Password", err.Error(), email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
 	}
 	//var hashPassword string
 
 	hashPassword, err := utils.HashPassword(strings.TrimSpace(c.PostForm("password")))
 	if err != nil {
-		utils.Render(c, http.StatusSeeOther, views.Layout(nil, data, views.ChangePasswordForm(data.Header, "unknown token or email", email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
+		utils.Render(c, http.StatusSeeOther, views.Layout(nil,
+			views.LayoutAttribute{
+				PageTitle: "GL/Reset Password",
+				Script:    nil,
+			},
+			views.ChangePasswordForm("Reset Password", "unknown token or email", email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
 		return
 	}
 	var result sql.Result
@@ -148,12 +172,22 @@ func ChangePassword(c *gin.Context) {
     `, "", hashPassword, email, c.PostForm("token"))
 
 	if err != nil {
-		utils.Render(c, http.StatusSeeOther, views.Layout(nil, data, views.ChangePasswordForm(data.Header, "unknown token or email", email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
+		utils.Render(c, http.StatusSeeOther, views.Layout(nil,
+			views.LayoutAttribute{
+				PageTitle: "GL/Reset Password",
+				Script:    nil,
+			},
+			views.ChangePasswordForm("Reset Password", "unknown token or email", email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
 		return
 	}
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		utils.Render(c, http.StatusSeeOther, views.Layout(nil, data, views.ChangePasswordForm(data.Header, "unknown token or email", email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
+		utils.Render(c, http.StatusSeeOther, views.Layout(nil,
+			views.LayoutAttribute{
+				PageTitle: "GL/Reset Password",
+				Script:    nil,
+			},
+			views.ChangePasswordForm("Reset Password", "unknown token or email", email, c.PostForm("token"), c.PostForm("password"), c.PostForm("confirm-password"))))
 	}
 	c.Redirect(http.StatusOK, "/")
 

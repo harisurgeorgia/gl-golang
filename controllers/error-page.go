@@ -10,10 +10,11 @@ import (
 
 func PageNotFound(c *gin.Context) {
 	//var err error
-	var data, err = utils.GetBasePageData(c, "GL/404", "", "", nil)
-	if err != nil {
-
+	attr := views.LayoutAttribute{
+		PageTitle:  "GL/404",
+		PageHeader: "GL/404",
+		Script:     nil,
 	}
-	//var data = views.PageData{Title: "GL/404", Header: ""}
-	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.ErrorPage(messages.Error404)))
+
+	utils.Render(c, 200, views.Layout(nil, attr, views.ErrorPage(messages.Error404)))
 }

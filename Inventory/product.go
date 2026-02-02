@@ -12,38 +12,48 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	csrf "github.com/utrack/gin-csrf"
 )
 
 func Product(c *gin.Context) {
 	product := &models.Product{}
 	idStr := c.Param("id")
 	trimmed := strings.TrimSpace(idStr)
-	data, err := utils.GetBasePageData(c, "Product", "Product Edit/Entry", "product", nil)
-	data.Link = "/inventory/product/search"
+	s := "/inventory/product/search"
+	pageData := views.LayoutAttribute{
+		PageTitle: "Product",
+		Script:    nil,
+	}
+	menus, err := models.GetUserMenu("dashboard")
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
+	}
+	navData := views.NavData{
+		Link:  &s,
+		Menus: menus,
 	}
 
 	grouped, err := models.GetAllSubAccountType()
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
+	token := csrf.GetToken(c)
 
 	if len(trimmed) == 0 {
-		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.Product(product, grouped, models.Units)))
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(navData), pageData, views.Product(product, grouped, models.Units, token)))
 		return
 	}
 
 	id, err := strconv.ParseInt(trimmed, 10, 64)
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
@@ -51,12 +61,13 @@ func Product(c *gin.Context) {
 	p, err := models.GetProduct(id)
 
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(messages.Error500)))
 		return
 	}
-	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.Product(p, grouped, models.Units)))
+
+	utils.Render(c, 200, views.Layout(views.Nav(navData), pageData, views.Product(p, grouped, models.Units, token)))
 }
 
 func SaveProduct(c *gin.Context) {
@@ -65,8 +76,8 @@ func SaveProduct(c *gin.Context) {
 
 	userID, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
@@ -75,8 +86,8 @@ func SaveProduct(c *gin.Context) {
 	product.UserId = userID
 	id, err := models.SaveProduct(*product)
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
@@ -92,25 +103,36 @@ func DeleteProduct(c *gin.Context) {
 }
 
 func ListAllProducts(c *gin.Context) {
-	data, err := utils.GetBasePageData(c, "Product", "Product Edit/Entry", "", nil)
-	data.Link = "/inventory/product/search"
+
+	menus, err := models.GetUserMenu("dashboard")
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
+
+	link := "/inventory/product/search"
+	navData := views.NavData{
+		Link:   &link,
+		Menus:  menus,
+		Search: true,
+	}
+
 	filter := c.Param("filter")
 	if len(filter) == 0 {
 		filter = ""
 	}
 	product, err := models.ListAllProducts(filter)
 	if err != nil {
-		utils.Render(c, 500, views.Layout(nil, views.PageData{
-			Title: "Unexpected Error",
+		utils.Render(c, 500, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Unexpected Error",
 		}, views.ErrorPage(redirect.Error500)))
 		return
 	}
-	utils.Render(c, 200, views.Layout(views.Nav(data), data, views.ProductList(product)))
+	utils.Render(c, 200, views.Layout(views.Nav(navData), views.LayoutAttribute{
+		PageTitle: "Product List",
+		Script:    nil,
+	}, views.ProductList(product)))
 
 }

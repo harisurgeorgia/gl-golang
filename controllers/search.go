@@ -15,18 +15,28 @@ import (
 )
 
 func JournalSearch(c *gin.Context) {
-	search := strings.TrimSpace(c.PostForm("search"))
-
-	if search != "" {
-
+	search := c.Query("search")
+	if search == "" {
+		utils.Render(c, 400, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Bad Request",
+		}, views.ErrorPage(redirect.Error400)))
+		return
 	}
+	search = strings.TrimSpace(search)
 
-	id, err := models.FindJournalByJournalNumber(search)
+	journals, err := models.FindJournalByJournalNumber(search)
 	if err != nil {
-
+		utils.Render(c, 404, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Journal Not Found",
+		}, views.ErrorPage(redirect.Error404)))
+		return
 	}
-	fmt.Println("/journal/edit/" + strconv.FormatInt(id, 10))
-	c.Redirect(http.StatusFound, "/journal/edit/"+strconv.FormatInt(id, 10))
+	if len(journals) == 1 {
+		fmt.Println("/journal/edit/" + strconv.FormatInt(*journals[0].ID, 10))
+		c.Redirect(http.StatusFound, "/journal/edit/"+strconv.FormatInt(*journals[0].ID, 10))
+	} else {
+		c.Redirect(http.StatusFound, "/journal/list-by-number/"+search)
+	}
 
 }
 
@@ -34,16 +44,16 @@ func FindProductByCode(c *gin.Context) {
 
 	search, exists := c.GetPostForm("search")
 	if !exists || strings.TrimSpace(search) == "" {
-		utils.Render(c, 400, views.Layout(nil, views.PageData{
-			Title: "Bad Request",
+		utils.Render(c, 400, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Bad Request",
 		}, views.ErrorPage(redirect.Error400)))
 		return
 	}
 
 	products, err := models.FindProductByCode(search)
 	if err != nil || len(products) == 0 {
-		utils.Render(c, 404, views.Layout(nil, views.PageData{
-			Title: "Product Not Found",
+		utils.Render(c, 404, views.Layout(nil, views.LayoutAttribute{
+			PageTitle: "Product Not Found",
 		}, views.ErrorPage(redirect.Error404)))
 		return
 	}

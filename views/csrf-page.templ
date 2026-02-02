@@ -1,0 +1,11 @@
+package views
+
+templ CSRFPage(csrfField string) {
+<h1>CSRF Page</h1>
+
+<form action="/csrf" method="post">
+    <input type="hidden" name="_csrf" value={csrfField}>
+    <input type="text" name="name">
+    <button type="submit">Submit</button>
+</form>
+}

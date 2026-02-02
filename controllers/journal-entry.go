@@ -15,31 +15,50 @@ import (
 	"github.com/shopspring/decimal"
 
 	"github.com/gin-gonic/gin"
+	csrf "github.com/utrack/gin-csrf"
 )
 
 func JournalEntry(c *gin.Context) {
 	s := "/static/js/journal-entry.js"
-	script := &s
-	data, err := utils.GetBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
-	data.Link = "/journal/search"
-	journal := models.Journal{JournalDate: time.Now()}
-
-	if err != nil {
-
+	attr := views.LayoutAttribute{
+		PageTitle:  "GL Entry",
+		PageHeader: "Journal Entry",
+		Script:     &s,
 	}
 
-	//data = views.PageData{Title: "GL Entry", Header: "Journal Entry"}
+	journal := models.Journal{JournalDate: time.Now()}
 
 	accounts := models.GetAllAccounts()
+	link := "/journal/search"
+	menus, err := models.GetUserMenu("journal")
+	if err != nil {
+		utils.Render(c, http.StatusInternalServerError, views.Layout(nil, attr, views.ErrorPage(redirect.Error500)))
+		return
+	}
+	navData := views.NavData{
+		Menus:     menus,
+		Link:      &link,
+		IsTopNav:  true,
+		Search:    true,
+		CsrfToken: csrf.GetToken(c),
+	}
 	journalPageData := models.JournalPageData{
 		Detail:     journal,
 		Heads:      accounts,
 		PostStatus: false,
 	}
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.JournalEntryForm(journalPageData)))
+	token := navData.CsrfToken
+
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(navData), attr, views.JournalEntryForm(journalPageData, token)))
 }
 
 func JournalSave(c *gin.Context) {
+
+	menus, err := models.GetUserMenu("journal")
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to retrieve user menu: %v", err)
+		return
+	}
 
 	c.Request.ParseForm()
 	dabitBalance := c.PostForm("debit-bal")
@@ -93,10 +112,19 @@ func JournalSave(c *gin.Context) {
 			journal.ID = &id
 		}
 	}
-
-	data, err := utils.GetBasePageData(c, "GL Entry", "Journal Entry", "journal", nil)
-	if err != nil {
-
+	link := "/journal/search"
+	navData := views.NavData{
+		Menus:     menus,
+		Link:      &link,
+		IsTopNav:  true,
+		Search:    true,
+		CsrfToken: csrf.GetToken(c),
+	}
+	s := "/static/js/journal-entry.js"
+	attr := views.LayoutAttribute{
+		PageTitle:  "GL Entry",
+		PageHeader: "Journal Entry",
+		Script:     &s,
 	}
 	//data = views.PageData{Title: "GL", Header: "Journal Entry"}
 	accounts := models.GetAllAccounts()
@@ -105,8 +133,9 @@ func JournalSave(c *gin.Context) {
 		Heads:      accounts,
 		PostStatus: false,
 	}
+	csrfToken := csrf.GetToken(c)
 	if strings.TrimSpace(dabitBalance) != strings.TrimSpace(creditBalance) {
-		utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.JournalEntryForm(journalPageData)))
+		utils.Render(c, http.StatusOK, views.Layout(views.Nav(navData), attr, views.JournalEntryForm(journalPageData, csrfToken)))
 		return
 	}
 
@@ -120,12 +149,25 @@ func JournalSave(c *gin.Context) {
 }
 
 func JournalList(c *gin.Context) {
-
-	data, err := utils.GetBasePageData(c, "GL Entry", "Journal Entry", "journal", nil)
-	data.Link = "/journal/search"
+	menus, err := models.GetUserMenu("journal")
 	if err != nil {
-
+		c.String(http.StatusInternalServerError, "Failed to retrieve user menu: %v", err)
+		return
 	}
+	link := "/journal/search"
+	navData := views.NavData{
+		Menus:     menus,
+		Link:      &link,
+		IsTopNav:  true,
+		Search:    true,
+		CsrfToken: csrf.GetToken(c),
+	}
+	attr := views.LayoutAttribute{
+		PageTitle:  "GL Entry",
+		PageHeader: "Journal Entry",
+		Script:     nil,
+	}
+
 	//data = views.PageData{Title: "GL", Header: "Journal Entry"}
 	filter := c.Param("filter")
 	if filter == "all" {
@@ -138,42 +180,46 @@ func JournalList(c *gin.Context) {
 		return
 	}
 
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.JournalList(journals)))
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(navData), attr, views.JournalList(journals)))
 }
 
 // func view a journal entry
 func JournalEdit(c *gin.Context) {
-	var script *string
+
 	s := "/static/js/journal-entry.js"
-	script = &s
-	data, err := utils.GetBasePageData(c, "GL Entry", "Journal Entry", "journal", script)
-	data.Link = "/journal/search"
 
-	if err != nil {
-
-	}
 	idStr := c.Param("id")
 	id, err := strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
-		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
-			Title: "Invalid ID",
-		}, views.ErrorPage(redirect.Error400)))
+		attr := views.LayoutAttribute{
+			PageTitle:  "GL Entry",
+			PageHeader: "Journal Entry",
+			Script:     &s,
+		}
+		utils.Render(c, http.StatusBadRequest, views.Layout(nil, attr, views.ErrorPage(redirect.Error400)))
 		return
 	}
 
 	journal, err := models.GetJournalByID(id)
 	if err != nil || journal == nil {
-
-		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
-			Title: "Invalid ID",
-		}, views.ErrorPage(redirect.Error400)))
-
+		attr := views.LayoutAttribute{
+			PageTitle:  "GL Entry",
+			PageHeader: "Journal Entry",
+			Script:     &s,
+		}
+		utils.Render(c, http.StatusBadRequest, views.Layout(nil, attr, views.ErrorPage(redirect.Error400)))
 		return
 	}
 	uid := session.GetSession(c, "user_id")
 	user_id, err := strconv.ParseInt(uid, 10, 64)
 	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+		attr := views.LayoutAttribute{
+			PageTitle:  "GL Entry",
+			PageHeader: "Journal Entry",
+			Script:     &s,
+		}
+		utils.Render(c, http.StatusBadRequest, views.Layout(nil, attr, views.ErrorPage(redirect.Error400)))
+		return
 	}
 	journal.CreatedBy = user_id
 	journal.PostedBy = &user_id
@@ -181,13 +227,40 @@ func JournalEdit(c *gin.Context) {
 
 	role, err := strconv.Atoi(urole)
 	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+		attr := views.LayoutAttribute{
+			PageTitle:  "GL Entry",
+			PageHeader: "Journal Entry",
+			Script:     &s,
+		}
+		utils.Render(c, http.StatusBadRequest, views.Layout(nil, attr, views.ErrorPage(redirect.Error400)))
 		return
 	}
 	PostStatus := false
 	if role == 4 && journal.Status == "closed" {
 		PostStatus = true
-		data.Script = nil
+	}
+	menus, err := models.GetUserMenu("journal")
+	if err != nil {
+		attr := views.LayoutAttribute{
+			PageTitle:  "GL Entry",
+			PageHeader: "Journal Entry",
+			Script:     &s,
+		}
+		utils.Render(c, http.StatusBadRequest, views.Layout(nil, attr, views.ErrorPage(redirect.Error400)))
+		return
+	}
+	link := "/journal/search"
+	navData := views.NavData{
+		Menus:     menus,
+		Link:      &link,
+		IsTopNav:  true,
+		Search:    true,
+		CsrfToken: csrf.GetToken(c),
+	}
+	attr := views.LayoutAttribute{
+		PageTitle:  "GL Entry",
+		PageHeader: "Journal Entry",
+		Script:     &s,
 	}
 	accounts := models.GetAllAccounts()
 	journalPageData := models.JournalPageData{
@@ -195,8 +268,8 @@ func JournalEdit(c *gin.Context) {
 		Heads:      accounts,
 		PostStatus: PostStatus,
 	}
-
-	utils.Render(c, http.StatusOK, views.Layout(views.Nav(data), data, views.JournalEntryForm(journalPageData)))
+	csrfToken := csrf.GetToken(c)
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(navData), attr, views.JournalEntryForm(journalPageData, csrfToken)))
 }
 
 func JournalVerify(c *gin.Context) {
@@ -211,17 +284,28 @@ func JournalPost(c *gin.Context) {
 		return
 	}
 	journal, err := models.GetJournalByID(id)
-	if err != nil || journal == nil {
-		utils.Render(c, http.StatusBadRequest, views.Layout(nil, views.PageData{
-			Title: "Page Not Found",
-		}, views.ErrorPage(redirect.Error404)))
-
-		return
+	menus, err := models.GetUserMenu("journal")
+	s := "/static/js/journal-entry.js"
+	link := "/journal/search"
+	navData := views.NavData{
+		Menus:     menus,
+		Link:      &link,
+		IsTopNav:  true,
+		Search:    true,
+		CsrfToken: csrf.GetToken(c),
 	}
+	utils.Render(c, http.StatusBadRequest,
+		views.Layout(views.Nav(navData),
+			views.LayoutAttribute{PageTitle: "GL Entry", PageHeader: "Journal Entry", Script: &s},
+			views.ErrorPage(redirect.Error404)))
+
 	uid := session.GetSession(c, "user_id")
 	user_id, err := strconv.ParseInt(uid, 10, 64)
 	if err != nil {
-		c.String(http.StatusInternalServerError, "Failed to retrieve journal: %v", err)
+		utils.Render(c, http.StatusBadRequest,
+			views.Layout(views.Nav(navData),
+				views.LayoutAttribute{PageTitle: "GL Entry", PageHeader: "Journal Entry", Script: &s},
+				views.ErrorPage(redirect.Error404)))
 		return
 	}
 	journal.PostedBy = &user_id
@@ -235,4 +319,24 @@ func JournalPost(c *gin.Context) {
 		return
 	}
 	c.Redirect(http.StatusFound, "/journal/edit/"+strconv.FormatInt(id, 10))
+}
+
+func FindJournalByJournalNumber(c *gin.Context) {
+	filter := strings.TrimSpace(c.Param("filter"))
+	rows, err := models.FindJournalByJournalNumber(filter)
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Failed to retrieve journals: %v", err)
+		return
+	}
+	menus, _ := models.GetUserMenu("journal")
+	link := "/journal/search"
+	navData := views.NavData{
+		Menus:    menus,
+		Link:     &link,
+		IsTopNav: true,
+		Search:   true,
+	}
+
+	utils.Render(c, http.StatusOK, views.Layout(views.Nav(navData), views.LayoutAttribute{PageTitle: "GL-list"}, views.JournalList(rows)))
+
 }

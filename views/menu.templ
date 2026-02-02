@@ -1,26 +1,23 @@
 package views
 
-templ MenuPage(pageData PageData) {
+templ MenuPage(nav NavData, header string ) {
 
 <div class="container py-5">
-    <h2 class="mb-2 text-center text-primary">{ pageData.Header }</h2>
-    <p class="mb-5 text-center">{ pageData.User.Fullname }</p>
+    <h2 class="mb-2 text-center text-primary">{ header }</h2>
+    <p class="mb-5 text-center"></p>
     <div class="row justify-content-left g-4">
 
-        for _, card := range pageData.Menus {
+        for _, item := range nav.Menus {
         <div class="col-md-4 d-flex justify-content-center">
-            <a href={ card.Url } class="text-decoration-none w-100">
+            <a href={ item.Url } class="text-decoration-none w-100">
                 <div class="card shadow w-100 p-5 bg-primary-subtle">
                     <div class="card-body text-center">
-                        <h5 class="card-title fw-bold text-uppercase">{ card.MenuDescription }</h5>
+                        <h5 class="card-title fw-bold text-uppercase">{ item.MenuDescription }</h5>
                     </div>
                 </div>
             </a>
         </div>
         }
-
-
-        <!-- Add more cards as needed -->
     </div>
 </div>
 }

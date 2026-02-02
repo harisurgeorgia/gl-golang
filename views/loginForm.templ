@@ -2,10 +2,10 @@ package views
 
 
 
-templ LoginForm( header, errorMsg string) {
+templ LoginForm(errorMsg string) {
 <div class="d-flex vh-100 justify-content-center align-items-center">
     <div class="card shadow p-4" style="min-width: 350px; max-width: 400px; width: 100%;">
-        <h1 class="text-center text-uppercase mb-4">{ header }</h1>
+        <h1 class="text-center text-uppercase mb-4">Login</h1>
         if errorMsg != "" {
         <div class="alert alert-danger" role="alert">
             {errorMsg}
